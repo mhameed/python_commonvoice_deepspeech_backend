@@ -1,0 +1,18 @@
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+        <title>{{ title }}</title>
+    </head>
+    <body>
+<table>
+<caption>logs</caption>
+<tr><th>id</th><th>entry</th><th>timestamp</th></tr>
+        {% for p in logs %}
+        <tr><td> {{ p.id }} </td><td> {{ p.entry }} </td><td> {{ p.timestamp }} </td></tr>
+        {% endfor %}
+</table>
+
+<a href='/snippets/monitor/'>Back to monitoring</a>
+    </body>
+</html>
+
