@@ -2,7 +2,7 @@ from datetime import datetime
 import uuid
 import json
 import sys
-from app import app, db
+from app import db
 from flask import jsonify, abort, request, make_response, url_for, render_template, Response
 from flask_classy import FlaskView
 from flask_sqlalchemy import SQLAlchemy
