@@ -118,12 +118,8 @@ class SnippetsView(FlaskView):
             return make_response(jsonify(status='token does not match, you are not authorized'), 403)
         entry.status = request.json['status']
         audio = base64.decodestring(request.json['audio'])
-        wf = wave.open('/tmp/%s-%s.wav' %(entry.fname, entry.lineno), 'wb')
-        wf.setnchannels(1)
-        wf.setsampwidth(2)
-        wf.setframerate(16000)
-        wf.writeframes(audio)
-        wf.close()
+        with open('/tmp/%s-%s.wav' %(entry.fname, entry.lineno), 'wb') as f:
+            f.write(audio)
         entry.save()
         SnippetsView.__cache.pop(entry.id)
         return jsonify(snippet=entry.snppt, id=entry.id, status=entry.status)
