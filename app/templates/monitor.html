@@ -4,6 +4,8 @@
         <title>{{ title }}</title>
     </head>
     <body>
+
+{% if processing.count() %}
 <table>
 <caption>processing</caption>
 <tr><th>id</th><th>filename</th><th>line number</th><th>snippet</th><th>status</th></tr>
@@ -11,8 +13,10 @@
         <tr><td> <a href='{{ url_for('LogsView:get', id=p.id) }}'>{{p.id}}</a></td><td> {{p.fname }}</td><td> {{p.lineno}} </td><td> {{ p.snppt }} </td><td> {{ p.status }} </td></tr>
         {% endfor %}
 </table>
+{% endif %}
 
 
+{% if completed.count() %}
 <table>
 <caption>completed</caption>
 <tr><th>id</th><th>filename</th><th>line number</th><th>snippet</th><th>status</th></tr>
@@ -20,7 +24,9 @@
         <tr><td> <a href='{{ url_for('LogsView:get', id=p.id) }}'>{{p.id}}</a></td><td> {{p.fname }}</td><td> {{p.lineno}} </td><td> {{ p.snppt }} </td><td> {{ p.status }} </td></tr>
         {% endfor %}
 </table>
+{% endif %}
 
+{% if outstanding.count() %}
 <table>
 <caption>outstanding</caption>
 <tr><th>id</th><th>filename</th><th>line number</th><th>snippet</th><th>status</th></tr>
@@ -28,6 +34,7 @@
         <tr><td> <a href='{{ url_for('LogsView:get', id=p.id) }}'>{{p.id}}</a></td><td> {{p.fname }}</td><td> {{p.lineno}} </td><td> {{ p.snppt }} </td><td> {{ p.status }} </td></tr>
         {% endfor %}
 </table>
+{% endif %}
 
     </body>
 </html>
