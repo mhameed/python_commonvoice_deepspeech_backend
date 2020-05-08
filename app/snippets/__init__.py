@@ -138,7 +138,17 @@ class SnippetsView(FlaskView):
         except IntegrityError:
             return make_response(jsonify(status='fname, lineno needs to be unique'), 409)
 
-    def reset(self):
+    def reset(self, id):
+        entry = Snippet.query.filter(Snippet.id==id).one()
+        entry.status = ''
+        entry.save()
+        html = render_template('reset_status.html')
+        r = make_response(html)
+        r.mimetype = "text/html"
+        return r
+
+
+    def reset_all(self):
         for entry in Snippet.query.all():
             entry.status = ''
             entry.save()

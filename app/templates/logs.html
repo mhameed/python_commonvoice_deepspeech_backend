@@ -11,7 +11,9 @@
         <tr><td> {{ e.id }} </td><td> {{ e.entry }} </td><td> {{ e.timestamp }} </td></tr>
         {% endfor %}
 </table>
-
+{% if entry.status != '' %}
+<a href='{{ url_for('SnippetsView:reset', id=entry.id) }}'>reset status</a>
+{% endif %}
 <a href='{{ url_for('SnippetsView:monitor') }}'>Back to monitoring</a>
     </body>
 </html>
