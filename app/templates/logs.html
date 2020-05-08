@@ -7,8 +7,8 @@
 <table>
 <caption>logs</caption>
 <tr><th>id</th><th>entry</th><th>timestamp</th></tr>
-        {% for p in logs %}
-        <tr><td> {{ p.id }} </td><td> {{ p.entry }} </td><td> {{ p.timestamp }} </td></tr>
+        {% for e in entry.logs %}
+        <tr><td> {{ e.id }} </td><td> {{ e.entry }} </td><td> {{ e.timestamp }} </td></tr>
         {% endfor %}
 </table>
 

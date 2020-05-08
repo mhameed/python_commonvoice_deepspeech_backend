@@ -166,9 +166,9 @@ class LogsView(FlaskView):
         return "need a snippet id"
 
     def get(self, id):
-        p = Snippet.query.filter(Snippet.id==id).one()
+        entry = Snippet.query.filter(Snippet.id==id).one()
 
-        html = render_template('logs.html', title='Logs', logs=p.logs)
+        html = render_template('logs.html', title='Logs', entry=entry)
         r = make_response(html)
         r.mimetype = "text/html"
         return r
