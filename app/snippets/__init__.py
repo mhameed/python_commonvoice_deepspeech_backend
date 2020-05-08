@@ -1,6 +1,7 @@
 from datetime import datetime
 import uuid
 import json
+import base64
 import sys
 from app import db
 from flask import jsonify, abort, request, make_response, url_for, render_template, Response
