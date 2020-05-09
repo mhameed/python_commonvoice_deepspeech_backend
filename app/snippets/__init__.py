@@ -121,10 +121,10 @@ class SnippetsView(FlaskView):
         entry.status = request.json['status']
         audio = base64.decodestring(request.json['audio'])
         try:
-            os.mkdir(os.getcwd(), 'audio')
+            os.mkdir(os.path.join(os.getcwd(), 'audio'))
         except Exception:
             pass
-        with open(os.join(os.getcwd(), 'audio', '%s-%s.audio' %(entry.fname, entry.lineno)), 'wb') as f:
+        with open(os.path.join(os.getcwd(), 'audio', '%s-%s.audio' %(entry.fname, entry.lineno)), 'wb') as f:
             f.write(audio)
         entry.save()
         SnippetsView.__cache.pop(entry.id)
