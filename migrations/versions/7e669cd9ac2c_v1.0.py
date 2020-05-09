@@ -1,4 +1,4 @@
-"""logs snippets table
+"""log and snippet tables
 
 Revision ID: 7e669cd9ac2c
 Revises: 
