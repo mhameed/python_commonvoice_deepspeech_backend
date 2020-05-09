@@ -3,6 +3,7 @@ import uuid
 import json
 import base64
 import sys
+import os
 from app import db
 from flask import jsonify, abort, request, make_response, url_for, render_template, Response
 from flask_classy import FlaskView
@@ -119,7 +120,11 @@ class SnippetsView(FlaskView):
             return make_response(jsonify(status='token does not match, you are not authorized'), 403)
         entry.status = request.json['status']
         audio = base64.decodestring(request.json['audio'])
-        with open('/tmp/%s-%s.wav' %(entry.fname, entry.lineno), 'wb') as f:
+        try:
+            os.mkdir(os.getcwd(), 'audio')
+        except Exception:
+            pass
+        with open(os.join(os.getcwd(), 'audio', '%s-%s.audio' %(entry.fname, entry.lineno)), 'wb') as f:
             f.write(audio)
         entry.save()
         SnippetsView.__cache.pop(entry.id)
