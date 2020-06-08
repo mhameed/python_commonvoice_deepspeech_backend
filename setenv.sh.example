@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# database connection information:
+dbuser=mysqldbuser
+dbpasswd=topsecret
+dbname=databasename
+dbhost=maria.example.com
+export DATABASE_URI=mysql+mysqlconnector://${dbuser}:${dbpasswd}@${dbhost}/${dbname}
+alias MYCLI="mycli -u ${dbuser} -p ${dbpasswd} -h ${dbhost} -D ${dbname}"
+
+# application settings:
+
+export serveport=80001 # the port that the application is served on
+export url_prefix='/speech/v1.0' # url prefix incase we have multiple apps
+
+export SECRET_KEY='secretApplicationKey'
+
+# commandline alias to quickly get into the db:
+alias MYCLI="mycli -u ${dbuser} -p ${dbpasswd} -h ${dbhost} -D ${dbname}"
