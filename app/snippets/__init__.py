@@ -101,6 +101,9 @@ class SnippetsView(FlaskView):
         r.mimetype = "text/html"
         return r
 
+    def getAudio(self, fname):
+        return send_from_directory(os.path.join(os.getcwd(), 'audio'), fname, as_attachment=False)
+
     def patch(self, id):
         try:
             id = int(id)
