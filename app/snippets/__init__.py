@@ -5,7 +5,7 @@ import base64
 import sys
 import os
 from app import db
-from flask import jsonify, abort, request, make_response, url_for, render_template, Response
+from flask import jsonify, abort, request, make_response, url_for, render_template, Response, send_from_directory
 from flask_classy import FlaskView
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm.exc import NoResultFound
