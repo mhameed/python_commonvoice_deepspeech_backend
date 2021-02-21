@@ -102,7 +102,7 @@ class SnippetsView(FlaskView):
         return r
 
     def getAudio(self, fname):
-        return send_from_directory(os.path.join(os.getcwd(), 'audio'), fname, as_attachment=False)
+        return send_from_directory(os.path.join(os.getcwd(), 'audio'), fname, as_attachment=False, cache_timeout=30)
 
     def patch(self, id):
         try:
