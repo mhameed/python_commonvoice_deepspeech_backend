@@ -1,0 +1,8 @@
+This directory should contain two downloaded files from the mozilla deepspeech project, namely the pbmm file 
+and the scorer file.
+rename the files so that they are ds.pbmm, and ds.scorer, that way our code can find them without too much 
+faf.
+
+https://github.com/mozilla/DeepSpeech
+
+At moment of writing, the pbmm and scorer files are the v0.9.3 files.
