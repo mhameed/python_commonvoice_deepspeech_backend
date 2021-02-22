@@ -13,7 +13,8 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    from app import snippets
+    from app import documentation, snippets
+    documentation.DocsView.register(app)
     snippets.SnippetsView.register(app)
     snippets.LogsView.register(app)
     return app
