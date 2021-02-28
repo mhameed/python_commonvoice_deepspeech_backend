@@ -75,7 +75,7 @@ class TranscriberView(FlaskView):
             return make_response(jsonify(status='json does not contain audio.'), 400)
         candidates = request.json.get('candidates',1)
         details = request.json.get('details',False)
-        audio = base64.decodestring(bytes(b64_audio, encoding='ascii'))
+        audio = base64.standard_b64decode(b64_audio)
         # we don't know what audio we are being parsed, so farm it out to ffmpeg to convert to
         # an acceptable format:
         (ffmpeg_cmd <<audio)()
