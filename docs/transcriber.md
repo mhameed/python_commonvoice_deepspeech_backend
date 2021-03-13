@@ -12,7 +12,7 @@ Examples of calling the transcriber:
 ## Single transcription:
 
     audio=$(base64 -w 0 proverbs-100.mp4)
-    url=http://localhost:9001/mesar/speech/transcriber/
+    url=https://api.hameed.info/mesar/speech/transcriber/
     . resty
     POST $url -H "Content-Type: Application/json" <<EOF
     {"audio":"$audio"}
@@ -32,7 +32,7 @@ You should get something like:
 ## multiple transcription candidates:
 
     audio=$(base64 -w 0 proverbs-100.mp4)
-    url=http://localhost:9001/mesar/speech/transcriber/
+    url=https://api.hameed.info/mesar/speech/transcriber/
     . resty
     POST $url -H "Content-Type: Application/json" <<EOF
     {"audio":"$audio", "candidates":3}
@@ -56,11 +56,12 @@ should produce something like:
 	}
       ]
     }
+
 # transcription with details:
 Time segmentation information is returned when requesting additional details.
 
     audio=$(base64 -w 0 proverbs-100.mp4)
-    url=http://localhost:9001/mesar/speech/transcriber/
+    url=https://api.hameed.info/mesar/speech/transcriber/
     . resty
     POST $url -H "Content-Type: Application/json" <<EOF
     {"audio":"$audio", "details":true}
