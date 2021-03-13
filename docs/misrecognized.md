@@ -8,3 +8,19 @@ Once a pairing exists between an audio segment and a string of text, it can then
 
 
 
+    audio=$(base64 -w 0 wrong-001.mp4)
+    url=https://api.hameed.info/mesar/speech/misrecognized/
+    . resty
+    POST $url -H "Content-Type: Application/json" <<EOF
+    {"audio":"$audio"}
+    EOF
+
+You should get something like:
+
+    {
+      "uuid": "3b375fa21f85432fb98d274334c39fb9"
+    }
+
+[back to index][back]
+
+[back]: index
