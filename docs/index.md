@@ -9,6 +9,12 @@ The following pages are available:
 * [Transcriber][transcriber]
 
 
+## Definitions
+
+* ```gold data```: a set of human verified audio segments and their textual transcriptions.
+* ```snippet```: A small section of text, provided for training purposes, is used by the trainer application to record matching audio, for making gold data.
+
+
 ## Useful references:
 
 ### http status codes
