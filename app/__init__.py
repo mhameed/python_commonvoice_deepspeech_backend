@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
@@ -18,4 +18,8 @@ def create_app(config_class=Config):
     snippets.SnippetsView.register(app)
     snippets.LogsView.register(app)
     transcriber.TranscriberView.register(app)
+
+    @app.route('/')
+    def slash():
+        return redirect(url_for('DocsView:index'))
     return app
