@@ -1,5 +1,12 @@
 # Transcriber
 
+The transcriber uses the current model to process the given audio and sends back a transcription.
+A brand new setup would use the downloaded/pre-trained deep speech model from mozilla.
+Any new personalized snippets/misrecognized segments that are added will trigger a nightly training round, from a previous checkpoint.
+More documentation to follow.
+
+
+
 Examples of calling the transcriber:
 
 ## Single transcription:
