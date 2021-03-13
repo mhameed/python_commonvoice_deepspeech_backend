@@ -5,6 +5,7 @@ This is the top level documentation page.
 The following pages are available:
 
 * [Misrecognized][misrecognized]
+* [Snippets][snippets]
 * [Transcriber][transcriber]
 
 
@@ -25,4 +26,5 @@ Where we provide command line examples Resty is used to make the examples clean 
 [httpstatuscodes]: https://restfulapi.net/http-status-codes/
 [misrecognized]: misrecognized
 [resty]: https://github.com/micha/resty
+[snippets]: snippets
 [transcriber]: transcriber
