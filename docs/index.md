@@ -4,7 +4,9 @@ This is the top level documentation page.
 
 The following pages are available:
 
-[Transcriber][transcriber]
+* [Misrecognized][misrecognized]
+* [Transcriber][transcriber]
+
 
 ## Useful references:
 
@@ -21,5 +23,6 @@ It provides a simple, concise shell interface for interacting with REST services
 Where we provide command line examples Resty is used to make the examples clean and concise.
 
 [httpstatuscodes]: https://restfulapi.net/http-status-codes/
+[misrecognized]: misrecognized
 [resty]: https://github.com/micha/resty
 [transcriber]: transcriber
