@@ -122,7 +122,7 @@ class SnippetsView(FlaskView):
         if entry.token != token:
             return make_response(jsonify(status='token does not match, you are not authorized'), 403)
         entry.status = request.json['status']
-        audio = base64.decodestring(request.json['audio'])
+        audio = base64.standard_b64decode(request.json['audio'])
         try:
             os.mkdir(os.path.join(os.getcwd(), 'audio'))
         except Exception:
