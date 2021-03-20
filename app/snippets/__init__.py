@@ -129,7 +129,7 @@ class SnippetsView(FlaskView):
         try:
             os.mkdir(os.path.join(os.getcwd(), 'audio'))
         except Exception:
-            pass
+            return make_response(jsonify(status='Unable to store given audio, permission or storage problem.'), 500)
         with open(os.path.join(os.getcwd(), 'audio', '%s-%s.audio' %(entry.fname, entry.lineno)), 'wb') as f:
             f.write(audio)
         entry.save()
