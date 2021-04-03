@@ -108,7 +108,7 @@ class SnippetsView(FlaskView):
         try:
             id = int(id)
         except ValueError:
-            return make_response(jsonify(status='A number was required.'), 400)
+            return make_response(jsonify(status='An id is required.'), 400)
         entry = SnippetsView.__cache.get(id, None)
         if not entry:
             return make_response(jsonify(status='Can not update an item which has not been requested'), 400)
