@@ -19,8 +19,8 @@ To view current snippets and their status visit [Monitor][monitor].
 
 "snippet", is the string of text that you should record and post back.
 
-    audio=$(base64 -w 0 /tmp/recording.mp4)
-    PATCH /patch -H "Content-Type: Application/json" <<EOF
+    $ audio=$(base64 -w 0 /tmp/recording.mp4)
+    $ PATCH /patch -H "Content-Type: Application/json" <<EOF
     {
       "id": 108,
       "token": "24bacf03949146d4804198f270713242",
@@ -28,11 +28,12 @@ To view current snippets and their status visit [Monitor][monitor].
       "audio":"$audio"
     }
     EOF
+    $
 
 ## Error codes:
 
 [back to index][back]
 
 [back]: index
-[monitor]: /snippets/monitor/
+[monitor]: ../snippets/monitor/
 
