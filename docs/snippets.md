@@ -1,6 +1,6 @@
 # Snippets
 
-Initial set of textual strings that should be recorded using the Trainer application to improve personal accuracy.
+Initial set of textual strings that should be recorded using the Trainer application to improve accuracy for the individual.
 
 To view current snippets and their status visit [Monitor][monitor].
 
