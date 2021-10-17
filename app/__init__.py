@@ -13,4 +13,6 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
 
+    from .views.sentences import bp as sentences_bp
+    app.register_blueprint(sentences_bp)
     return app
