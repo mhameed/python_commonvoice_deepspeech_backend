@@ -4,8 +4,13 @@ import sys
 import os
 from flask import Blueprint, g, jsonify, abort, request, make_response, url_for, render_template, Response, send_from_directory
 from sqlalchemy.exc import IntegrityError
+from tempfile import mkstemp
+from plumbum.cmd import ffmpeg, cp
 from app import db
 from ..models import Clip, Sentence
+
+_, tmp_fname = mkstemp(prefix='mcv_.', suffix='.mp3')
+ffmpeg_cmd = ffmpeg['-i', '-',  '-ac', '1', '-b:a', '16', '-ar', '16000', '-y', tmp_fname]
 
 bp = Blueprint('clips', __name__, url_prefix='/clips')
 
@@ -17,8 +22,9 @@ def post():
         return make_response(jsonify(status='No such sentence'), 400)
     c = Clip(sentence_id=sentence_id)
     c.save()
-    with open('/tmp/%s.mp3' %c.id, 'wb') as f:
-        f.write(request.get_data())
+    (ffmpeg_cmd << request.get_data() )()
+    fname = os.path.join(os.getcwd(), 'audio', c.id+'.mp3')
+    cp[tmp_fname, fname]()
     return jsonify(filePrefix=c.id)
 
 @bp.route('', methods=['GET'])
