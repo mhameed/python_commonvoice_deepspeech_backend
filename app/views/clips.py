@@ -10,7 +10,7 @@ from app import db
 from ..models import Clip, Sentence
 
 _, tmp_fname = mkstemp(prefix='mcv_.', suffix='.mp3')
-ffmpeg_cmd = ffmpeg['-i', '-',  '-ac', '1', '-b:a', '16', '-ar', '16000', '-y', tmp_fname]
+ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-y', tmp_fname]
 
 bp = Blueprint('clips', __name__, url_prefix='/clips')
 
