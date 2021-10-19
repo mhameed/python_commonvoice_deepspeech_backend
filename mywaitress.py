@@ -6,4 +6,4 @@ logger = logging.getLogger('waitress')
 logger.setLevel(logging.INFO)
 
 import app
-serve(app.create_app(), listen='*:'+env['serveport'], trusted_proxy='10.1.2.82', url_prefix=env['url_prefix'])
+serve(app.create_app(), listen='*:'+env['serveport'], trusted_proxy='10.1.3.83', url_prefix=env['url_prefix'])
