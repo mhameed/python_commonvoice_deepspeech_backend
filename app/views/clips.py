@@ -43,8 +43,8 @@ def get():
         d = {}
         d['id'] = c.id
         d['audioSrc'] = 'https://cv.hameed.info' + url_for('resources.get', id=c.id)
-        s = c.sentence
-        d['sentence'] = {'id':s.id, 'text':s.text}
+        d['glob'] = c.id+'/'+c.sentence.id
+        d['sentence'] = {'id':c.sentence.id, 'text':c.sentence.text}
         resp.append(d)
     if resp is []:
         return make_response(jsonify(status='No result found'), 404)
