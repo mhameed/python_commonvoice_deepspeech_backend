@@ -19,7 +19,7 @@ def post():
     sentence_id = request.headers.get('sentence_id')
     s = Sentence.query.filter(Sentence.id==sentence_id).first()
     if not s:
-        return make_response(jsonify(status='No such sentence'), 400)
+        return make_response(jsonify(status='No such sentence'), 404)
     c = Clip(sentence_id=sentence_id)
     c.save()
     (ffmpeg_cmd << request.get_data() )()
