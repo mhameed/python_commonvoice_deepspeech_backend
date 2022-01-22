@@ -68,3 +68,4 @@ class Clip(db.Model):
         db.session.add(self)
         db.session.commit()
 
+# vim: sw=4 ts=4 sts=4 expandtab
