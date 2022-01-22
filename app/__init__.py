@@ -17,4 +17,5 @@ def create_app(config_class=Config):
     app.register_blueprint(resources_bp, url_prefix=myPrefix+resources_bp.url_prefix)
     from .views.sentences import bp as sentences_bp
     app.register_blueprint(sentences_bp, url_prefix=myPrefix+sentences_bp.url_prefix)
+    print(app.url_map)
     return app
