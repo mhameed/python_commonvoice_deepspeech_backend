@@ -72,4 +72,31 @@ class Clip(db.Model):
         db.session.add(self)
         db.session.commit()
 
+class Unrecognized(db.Model):
+    id = db.Column(db.String(192), primary_key=True)
+
+    def __init__(self, *args, **kwargs):
+        super(Unrecognized, self).__init__()
+        self.id = kwargs.get('id', uuid.uuid4().hex)
+        if not self.id.startswith('u-'):
+            self.id = 'u-' + self.id
+        self.sentence_id = kwargs.get('sentence_id')
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return "<unrecognized('%s',)>" % self.id
+
+    def to_dict(self):
+        return {'id':self.id}
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
 # vim: sw=4 ts=4 sts=4 expandtab
