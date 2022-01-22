@@ -30,6 +30,10 @@ class Sentence(db.Model):
     def to_dict(self):
         return {'id':self.id, 'language':self.language, 'text':self.text}
 
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
     def save(self):
         db.session.add(self)
         db.session.commit()
