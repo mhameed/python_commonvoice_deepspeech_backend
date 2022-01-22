@@ -64,6 +64,10 @@ class Clip(db.Model):
     def to_dict(self):
         return {'id':self.id, 'sentence_id':self.sentence_id, 'positive':self.positiveVotes, 'negative':self.negativeVotes}
 
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
     def save(self):
         db.session.add(self)
         db.session.commit()
