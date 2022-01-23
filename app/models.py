@@ -75,6 +75,7 @@ class Clip(db.Model):
 
 class Unrecognized(db.Model):
     id = db.Column(db.String(192), primary_key=True)
+    data = db.Column(db.LargeBinary)
 
     def __init__(self, *args, **kwargs):
         super(Unrecognized, self).__init__()
