@@ -6,15 +6,13 @@ import os
 from flask import Blueprint, g, jsonify, abort, request, make_response, url_for, render_template, Response, send_from_directory
 from sqlalchemy.exc import IntegrityError
 from  sqlalchemy.sql.expression import func
-from tempfile import mkstemp
-from plumbum.cmd import ffmpeg, cp
+from plumbum.cmd import ffmpeg
 from app import db
 from ..models import Clip, Sentence
 import logging
 logger = logging.getLogger('cv.clips')
 
-_, tmp_fname = mkstemp(prefix='mcv_.', suffix='.mp3')
-ffmpeg_cmd = ffmpeg['-i', '-',  '-ac', '1', '-ar', '44100', '-y', tmp_fname]
+ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-f', 'ogg', '-']
 
 bp = Blueprint('clips', __name__, url_prefix='/clips')
 
@@ -50,11 +48,9 @@ def post():
         logger.debug(f"post: could not find a sentence with text:{sentence} or id:{sentence_id}")
         return make_response(jsonify(status='No such sentence', sentence_id=sentence_id, sentence=sentence), 404)
     c = Clip(sentence_id=s.id)
+    c.data = (ffmpeg_cmd << request.get_data() ).popen().stdout.read()
     c.save()
     logger.debug(f"post: associating {c.id} with {s.id}, which has a text of {s.text}")
-    (ffmpeg_cmd << request.get_data() )()
-    fname = os.path.join(os.getcwd(), 'audio', c.id+'.mp3')
-    cp[tmp_fname, fname]()
     return jsonify(filePrefix=c.id)
 
 @bp.route('', methods=['GET'])
