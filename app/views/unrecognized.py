@@ -4,23 +4,19 @@ import sys
 import os
 from flask import Blueprint, g, jsonify, abort, request, make_response, url_for, render_template, Response, send_from_directory
 from sqlalchemy.exc import IntegrityError
-from tempfile import mkstemp
-from plumbum.cmd import ffmpeg, mv
+from plumbum.cmd import ffmpeg
 from app import db
 from ..models import Clip, Sentence, Unrecognized
 
-_, tmp_fname = mkstemp(prefix='mcv_.', suffix='.mp3')
-ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-y', tmp_fname]
+ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-f', 'ogg', '-']
 
 bp = Blueprint('unrecognized', __name__, url_prefix='/unrecognized')
 
 @bp.route('', methods=['POST'])
 def post():
     u = Unrecognized()
+    u.data = (ffmpeg_cmd << request.get_data() ).popen().stdout.read()
     u.save()
-    (ffmpeg_cmd << request.get_data() )()
-    fname = os.path.join(os.getcwd(), 'audio', u.id+'.mp3')
-    mv[tmp_fname, fname]()
     return jsonify(filePrefix=u.id)
 
 @bp.route('', methods=['GET'])
@@ -48,10 +44,8 @@ def patch():
         s = Sentence(text=text)
         s.save()
     c = Clip(sentence_id=s.id)
+    c.data = u.data
     c.save()
-    oldname = os.path.join(os.getcwd(), 'audio', u.id+'.mp3')
-    newname = os.path.join(os.getcwd(), 'audio', c.id+'.mp3')
-    mv[oldname, newname]()
     u.delete()
     return make_response(jsonify(status='ok, all done'), 200)
 
