@@ -10,6 +10,8 @@ from tempfile import mkstemp
 from plumbum.cmd import ffmpeg, cp
 from app import db
 from ..models import Clip, Sentence
+import logging
+logger = logging.getLogger('cv.clips')
 
 _, tmp_fname = mkstemp(prefix='mcv_.', suffix='.mp3')
 ffmpeg_cmd = ffmpeg['-i', '-',  '-ac', '1', '-ar', '44100', '-y', tmp_fname]
@@ -20,14 +22,18 @@ bp = Blueprint('clips', __name__, url_prefix='/clips')
 def post():
     sentence_id = request.headers.get('sentence_id')
     if sentence_id:
+        logger.debug(f"post: received header with sentence_id:{sentence_id}")
         s = Sentence.query.filter(Sentence.id==sentence_id).first()
     else:
         sentence = urllib.parse.unquote(request.headers.get('sentence'))
+        logger.debug(f"post: received header with sentence:{sentence}")
         s = Sentence.query.filter(Sentence.text==sentence).first()
     if not s:
+        logger.debug(f"post: could not find a sentence with text:{sentence} or id:{sentence_id}")
         return make_response(jsonify(status='No such sentence', sentence_id=sentence_id, sentence=sentence), 404)
     c = Clip(sentence_id=s.id)
     c.save()
+    logger.debug(f"post: associating {c.id} with {s.id}, which has a text of {s.text}")
     (ffmpeg_cmd << request.get_data() )()
     fname = os.path.join(os.getcwd(), 'audio', c.id+'.mp3')
     cp[tmp_fname, fname]()
@@ -53,7 +59,9 @@ def get():
         d['sentence'] = {'id':c.sentence.id, 'text':c.sentence.text}
         resp.append(d)
     if resp is []:
+        logger.debug("get: returning []")
         return make_response(jsonify(status='No result found'), 404)
+    logger.debug("get: returning %s\n", json.dumps(resp))
     return jsonify(resp)
 
 # vim: sw=4 ts=4 sts=4 expandtab
