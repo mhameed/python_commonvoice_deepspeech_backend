@@ -4,6 +4,7 @@ import sys
 import os
 from flask import Blueprint, g, jsonify, abort, request, make_response, url_for, render_template, Response, send_from_directory
 from sqlalchemy.exc import IntegrityError
+from  sqlalchemy.sql.expression import func
 from tempfile import mkstemp
 from plumbum.cmd import ffmpeg, cp
 from app import db
@@ -39,7 +40,7 @@ def get():
     elif count > 100:
         count = 100
     resp = []
-    for c in  Clip.query.filter(Clip.positiveVotes+Clip.negativeVotes < 5).limit(count).all():
+    for c in  Clip.query.filter(Clip.positiveVotes+Clip.negativeVotes < 2).order_by(func.random()).limit(count):
         d = {}
         d['id'] = c.id
         d['audioSrc'] = 'https://cv.hameed.info' + url_for('resources.get', id=c.id)
