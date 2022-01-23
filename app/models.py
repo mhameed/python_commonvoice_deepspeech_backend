@@ -45,6 +45,7 @@ class Clip(db.Model):
     sentence = relationship("Sentence", back_populates="clips")
     positiveVotes = db.Column(db.Integer)
     negativeVotes = db.Column(db.Integer)
+    data = db.Column(db.LargeBinary)
 
     def __init__(self, *args, **kwargs):
         super(Clip, self).__init__()
