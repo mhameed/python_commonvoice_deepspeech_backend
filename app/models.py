@@ -81,7 +81,6 @@ class Unrecognized(db.Model):
         self.id = kwargs.get('id', uuid.uuid4().hex)
         if not self.id.startswith('u-'):
             self.id = 'u-' + self.id
-        self.sentence_id = kwargs.get('sentence_id')
 
     def __repr__(self):
         return self.__str__()
