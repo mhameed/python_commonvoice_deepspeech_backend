@@ -18,6 +18,24 @@ ffmpeg_cmd = ffmpeg['-i', '-',  '-ac', '1', '-ar', '44100', '-y', tmp_fname]
 
 bp = Blueprint('clips', __name__, url_prefix='/clips')
 
+@bp.route('/<id>/votes', methods=['POST'])
+def vote(id):
+    logger.debug(f"vote: received an id of:{id}")
+    c = Clip.query.filter(Clip.id==id).first()
+    if not c:
+        logger.debug(f"vote: no such id:{id}, returning")
+        return make_response(jsonify(status='No such clip'), 404)
+    logger.debug(f"vote: with id:{id}, its associated string is {c.sentence.text}")
+    content = request.json
+    if content['isValid']:
+        c.positiveVotes += 1
+        logger.debug(f"vote: clipid:{id} positive incremented")
+    else:
+        c.negativeVotes += 1
+        logger.debug(f"vote: clipid:{id} negative incremented")
+    c.save()
+    return jsonify(status='ok')
+
 @bp.route('', methods=['POST'])
 def post():
     sentence_id = request.headers.get('sentence_id')
