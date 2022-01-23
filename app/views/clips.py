@@ -1,5 +1,6 @@
 import uuid
 import json
+import urllib
 import sys
 import os
 from flask import Blueprint, g, jsonify, abort, request, make_response, url_for, render_template, Response, send_from_directory
@@ -18,10 +19,14 @@ bp = Blueprint('clips', __name__, url_prefix='/clips')
 @bp.route('', methods=['POST'])
 def post():
     sentence_id = request.headers.get('sentence_id')
-    s = Sentence.query.filter(Sentence.id==sentence_id).first()
+    if sentence_id:
+        s = Sentence.query.filter(Sentence.id==sentence_id).first()
+    else:
+        sentence = urllib.parse.unquote(request.headers.get('sentence'))
+        s = Sentence.query.filter(Sentence.text==sentence).first()
     if not s:
-        return make_response(jsonify(status='No such sentence'), 404)
-    c = Clip(sentence_id=sentence_id)
+        return make_response(jsonify(status='No such sentence', sentence_id=sentence_id, sentence=sentence), 404)
+    c = Clip(sentence_id=s.id)
     c.save()
     (ffmpeg_cmd << request.get_data() )()
     fname = os.path.join(os.getcwd(), 'audio', c.id+'.mp3')
