@@ -4,6 +4,7 @@ import sys
 import os
 from flask import Blueprint, g, jsonify, abort, request, make_response, url_for, render_template, Response, send_from_directory
 from sqlalchemy.exc import IntegrityError
+from  sqlalchemy.sql.expression import func
 from app import db
 from ..models import Sentence
 
@@ -21,8 +22,8 @@ def get():
     elif count > 100:
         count = 100
     resp = []
-    for s in Sentence.query:
-        if len(s.clips) > 2: continue
+    for s in Sentence.query.order_by(func.random()):
+        if len(s.clips) > 1: continue
         resp.append(s.to_dict())
         if len(resp) == count: break
     if resp is []:
