@@ -25,6 +25,7 @@ Markdown==3.3.3
 MarkupSafe==1.1.1
 msgpack==0.6.2
 mysql-connector==2.1.7
+numpy==1.22.1
 packaging==20.3
 pep517==0.8.2
 plumbum==1.7.0
