@@ -33,6 +33,7 @@ def get():
     d['audioSrc'] = 'https://cv.hameed.info' + url_for('resources.get', id=u.id)
     return jsonify(d)
 
+# patch method should be revised or deleted, as we now expect raw audio rather than a json object containing encoded audio.
 @bp.route('', methods=['PATCH'])
 def patch():
     u_id = request.headers.get('unrecognized_id')
