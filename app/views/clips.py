@@ -41,6 +41,8 @@ metrics['cv_requests'].labels(method='post', endpoint='/', view='clips')
 @bp.route('', methods=['POST'])
 def post():
     metrics['cv_requests'].labels(method='post', endpoint='/', view='clips').inc()
+    if not request.content_type.lower().startswith('audio/'):
+        return make_response(jsonify(status='Expected "content-type: audio/*" header'), 400)
     sentence_id = request.headers.get('sentence_id')
     if sentence_id:
         logger.debug(f"post: received header with sentence_id:{sentence_id}")

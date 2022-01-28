@@ -16,6 +16,8 @@ metrics['cv_requests'].labels(method='post', endpoint='/', view='unrecognized')
 @bp.route('', methods=['POST'])
 def post():
     metrics['cv_requests'].labels(method='post', endpoint='/', view='unrecognized').inc()
+    if not request.content_type.lower().startswith('audio/'):
+        return make_response(jsonify(status='Expected "content-type: audio/*" header'), 400)
     u = Unrecognized()
     u.data = (ffmpeg_cmd << request.get_data() ).popen().stdout.read()
     u.save()
@@ -27,7 +29,7 @@ def get():
     metrics['cv_requests'].labels(method='get', endpoint='/', view='unrecognized').inc()
     u = Unrecognized.query.first()
     if not u:
-        return make_response(jsonify(status='No result found'), 404)
+        return make_response(jsonify(status='No unrecognized audio clips.'), 404)
     d = {}
     d['id'] = u.id
     d['audioSrc'] = 'https://cv.hameed.info' + url_for('resources.get', id=u.id)
