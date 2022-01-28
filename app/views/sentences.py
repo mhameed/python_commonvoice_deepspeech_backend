@@ -5,15 +5,17 @@ import os
 from flask import Blueprint, g, jsonify, abort, request, make_response, url_for, render_template, Response, send_from_directory
 from sqlalchemy.exc import IntegrityError
 from  sqlalchemy.sql.expression import func
-from app import db
+from app import db, metrics
 from ..models import Sentence
 import logging
 logger = logging.getLogger('cv.sentences')
 
 bp = Blueprint('sentences', __name__, url_prefix='/sentences')
 
+metrics['cv_calls'].labels(method='get', endpoint='/', view='sentences')
 @bp.route('', methods=['GET'])
 def get():
+    metrics['cv_calls'].labels(method='get', endpoint='/', view='sentences').inc()
     count = request.args.get('count', '1')
     try:
         count = int(count)
@@ -35,8 +37,10 @@ def get():
     logger.debug(f"get: returning {resp}")
     return jsonify(resp)
 
+metrics['cv_calls'].labels(method='post', endpoint='/', view='sentences')
 @bp.route('', methods=['POST'])
 def post():
+    metrics['cv_calls'].labels(method='post', endpoint='/', view='sentences').inc()
     content = request.json
     text = content['text']
     if not text:
