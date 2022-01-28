@@ -17,6 +17,8 @@ def create_app(config_class=Config):
     myPrefix='/api/v1/en'
     from .views.clips import bp as clips_bp
     app.register_blueprint(clips_bp, url_prefix=myPrefix+clips_bp.url_prefix)
+    from .views.correct import bp as correct_bp
+    app.register_blueprint(correct_bp, url_prefix=myPrefix+correct_bp.url_prefix)
     from .views.metrics import bp as metrics_bp
     app.register_blueprint(metrics_bp, url_prefix=metrics_bp.url_prefix)
     from .views.resources import bp as resources_bp
