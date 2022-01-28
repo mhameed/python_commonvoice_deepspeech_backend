@@ -35,25 +35,4 @@ def get():
     d['audioSrc'] = 'https://cv.hameed.info' + url_for('resources.get', id=u.id)
     return jsonify(d)
 
-# patch method should be revised or deleted, as we now expect raw audio rather than a json object containing encoded audio.
-@bp.route('', methods=['PATCH'])
-def patch():
-    u_id = request.headers.get('unrecognized_id')
-    u = Unrecognized.query.filter(Unrecognized.id==u_id).first()
-    if not u:
-        return make_response(jsonify(status='No such unrecognized clip'), 404)
-    content = request.json
-    text = content['text']
-    if not text:
-        return make_response(jsonify(status='No text provided'), 400)
-    s = Sentence.query.filter(Sentence.text==text).first()
-    if not s:
-        s = Sentence(text=text)
-        s.save()
-    c = Clip(sentence_id=s.id)
-    c.data = u.data
-    c.save()
-    u.delete()
-    return make_response(jsonify(status='ok, all done'), 200)
-
 # vim: sw=4 ts=4 sts=4 expandtab
