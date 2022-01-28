@@ -1,8 +1,12 @@
 from flask import Flask, redirect, url_for
+from prometheus_client import Counter
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
 db = SQLAlchemy()
+metrics = {}
+metrics['cv_calls'] = Counter('cv_calls', 'number of calls that a function within a view has been called', ['view', 'method', 'endpoint'])
+
 migrate = Migrate()
 
 def create_app(config_class=Config):
@@ -13,6 +17,8 @@ def create_app(config_class=Config):
     myPrefix='/api/v1/en'
     from .views.clips import bp as clips_bp
     app.register_blueprint(clips_bp, url_prefix=myPrefix+clips_bp.url_prefix)
+    from .views.metrics import bp as metrics_bp
+    app.register_blueprint(metrics_bp, url_prefix=metrics_bp.url_prefix)
     from .views.resources import bp as resources_bp
     app.register_blueprint(resources_bp, url_prefix=myPrefix+resources_bp.url_prefix)
     from .views.sentences import bp as sentences_bp
