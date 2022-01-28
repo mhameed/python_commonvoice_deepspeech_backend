@@ -1,8 +1,6 @@
-import sys
 import os
-from tempfile import mkstemp
 from app import db, metrics
-from flask import Blueprint, request, make_response, Response
+from flask import Blueprint, jsonify, request, make_response, Response
 from plumbum.cmd import ffmpeg
 import numpy as np
 
@@ -11,8 +9,7 @@ from deepspeech import Model, version
 ds = Model(os.path.join(os.getcwd(), 'deepspeech_model', 'ds.pbmm'))
 ds.enableExternalScorer(os.path.join(os.getcwd(), 'deepspeech_model', 'ds.scorer'))
 
-_, tmp_fname = mkstemp(prefix='ds_transcriber.', suffix='.wav')
-ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-b:a', '16', '-ar', '16000', '-y', tmp_fname]
+ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-b:a', '16', '-ar', '16000', '-f', 'wav', '-']
 
 def words_from_candidate_transcript(metadata):
     word = ""
@@ -59,18 +56,17 @@ bp = Blueprint('transcribe', __name__, url_prefix='/transcribe')
 
 metrics['cv_requests'].labels(method='post', endpoint='/', view='transcribe')
 @bp.route('', methods=['POST'])
-def post(self):
+def post():
     metrics['cv_requests'].labels(method='post', endpoint='/', view='transcribe').inc()
     if not request.content_type.lower().startswith('audio/'):
         return make_response(jsonify(status='Expected "content-type: audio/" header'), 400)
     candidates = request.headers.get('candidates',1)
     details = request.headers.get('details',False)
-    (ffmpeg_cmd <<request.get_data() )()
     # read the mono 16khz wav file into a numpy array suitable for deepspeech:
-    raw_audio=np.fromfile(tmp_fname, np.int16)
+    audio=np.frombuffer((ffmpeg_cmd << request.get_data() ).popen().stdout.read(), np.int16)
     if details:
-        return make_response(jsonify(metadata_json_output(ds.sttWithMetadata(raw_audio, candidates))), 200)
-    data = metadata_json_output(ds.sttWithMetadata(raw_audio, candidates))
+        return make_response(jsonify(metadata_json_output(ds.sttWithMetadata(audio, candidates))), 200)
+    data = metadata_json_output(ds.sttWithMetadata(audio, candidates))
     transcripts={'transcripts':[]}
     results=[]
     for transcript in data['transcripts']:
