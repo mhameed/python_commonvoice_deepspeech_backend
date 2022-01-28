@@ -5,22 +5,26 @@ import os
 from flask import Blueprint, g, jsonify, abort, request, make_response, url_for, render_template, Response, send_from_directory
 from sqlalchemy.exc import IntegrityError
 from plumbum.cmd import ffmpeg
-from app import db
+from app import db, metrics
 from ..models import Clip, Sentence, Unrecognized
 
 ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-f', 'ogg', '-']
 
 bp = Blueprint('unrecognized', __name__, url_prefix='/unrecognized')
 
+metrics['cv_calls'].labels(method='post', endpoint='/', view='unrecognized')
 @bp.route('', methods=['POST'])
 def post():
+    metrics['cv_calls'].labels(method='post', endpoint='/', view='unrecognized').inc()
     u = Unrecognized()
     u.data = (ffmpeg_cmd << request.get_data() ).popen().stdout.read()
     u.save()
     return jsonify(filePrefix=u.id)
 
+metrics['cv_calls'].labels(method='get', endpoint='/', view='unrecognized')
 @bp.route('', methods=['GET'])
 def get():
+    metrics['cv_calls'].labels(method='get', endpoint='/', view='unrecognized').inc()
     u = Unrecognized.query.first()
     if not u:
         return make_response(jsonify(status='No result found'), 404)
