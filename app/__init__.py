@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from config import Config
 db = SQLAlchemy()
 metrics = {}
-metrics['cv_calls'] = Counter('cv_calls', 'number of calls that a function within a view has been called', ['view', 'method', 'endpoint'])
+metrics['cv_requests'] = Counter('cv_requests', 'total number and method of request for the given riew, endpoint.', ['view', 'method', 'endpoint'])
 
 migrate = Migrate()
 

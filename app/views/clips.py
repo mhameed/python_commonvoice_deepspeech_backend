@@ -15,12 +15,12 @@ logger = logging.getLogger('cv.clips')
 ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-f', 'ogg', '-']
 
 bp = Blueprint('clips', __name__, url_prefix='/clips')
-metrics['cv_calls'].labels(method='post', endpoint='/{id}/votes', view='clips')
 
+metrics['cv_requests'].labels(method='post', endpoint='/{id}/votes', view='clips')
 @bp.route('/<id>/votes', methods=['POST'])
 def vote(id):
-    metrics['cv_calls'].labels(method='post', endpoint='/{id}/votes', view='clips').inc()
-    metrics['cv_calls'].labels(method='post', endpoint=f'/{id}/votes', view='clips').inc()
+    metrics['cv_requests'].labels(method='post', endpoint='/{id}/votes', view='clips').inc()
+    metrics['cv_requests'].labels(method='post', endpoint=f'/{id}/votes', view='clips').inc()
     logger.debug(f"vote: received an id of:{id}")
     c = Clip.query.filter(Clip.id==id).first()
     if not c:
@@ -37,11 +37,10 @@ def vote(id):
     c.save()
     return jsonify(status='ok')
 
-metrics['cv_calls'].labels(method='post', endpoint='/', view='clips')
-
+metrics['cv_requests'].labels(method='post', endpoint='/', view='clips')
 @bp.route('', methods=['POST'])
 def post():
-    metrics['cv_calls'].labels(method='post', endpoint='/', view='clips').inc()
+    metrics['cv_requests'].labels(method='post', endpoint='/', view='clips').inc()
     sentence_id = request.headers.get('sentence_id')
     if sentence_id:
         logger.debug(f"post: received header with sentence_id:{sentence_id}")
@@ -59,10 +58,10 @@ def post():
     logger.debug(f"post: associating {c.id} with {s.id}, which has a text of {s.text}")
     return jsonify(filePrefix=c.id)
 
-metrics['cv_calls'].labels(method='post', endpoint='/', view='clips')
+metrics['cv_requests'].labels(method='post', endpoint='/', view='clips')
 @bp.route('', methods=['GET'])
 def get():
-    metrics['cv_calls'].labels(method='get', endpoint='/', view='clips').inc()
+    metrics['cv_requests'].labels(method='get', endpoint='/', view='clips').inc()
     count = request.args.get('count', '1')
     try:
         count = int(count)

@@ -10,12 +10,12 @@ import logging
 logger = logging.getLogger('cv.resources')
 
 bp = Blueprint('resources', __name__, url_prefix='/resources')
-metrics['cv_calls'].labels(method='get', endpoint='/{id}', view='resources')
+metrics['cv_requests'].labels(method='get', endpoint='/{id}', view='resources')
 @bp.route('/<id>', methods=['GET'])
 def get(id):
     # two metrics, one that includes the id, and one that has the template of the id so that we can count how many times resources itself has been called regardless of id
-    metrics['cv_calls'].labels(method='get', endpoint='/{id}', view='resources').inc()
-    metrics['cv_calls'].labels(method='get', endpoint=f'/{id}', view='resources').inc()
+    metrics['cv_requests'].labels(method='get', endpoint='/{id}', view='resources').inc()
+    metrics['cv_requests'].labels(method='get', endpoint=f'/{id}', view='resources').inc()
     logger.debug(f"get: Received a request with id:{id}")
     if id.startswith('u-'):
         u = Unrecognized.query.filter(Unrecognized.id==id).first()
