@@ -45,7 +45,7 @@ class Clip(db.Model):
     sentence = relationship("Sentence", back_populates="clips")
     positiveVotes = db.Column(db.Integer)
     negativeVotes = db.Column(db.Integer)
-    data = db.Column(db.LargeBinary)
+    data = db.Column(db.LargeBinary(length=(2**32)-1))
 
     def __init__(self, *args, **kwargs):
         super(Clip, self).__init__()
@@ -75,7 +75,7 @@ class Clip(db.Model):
 
 class Unrecognized(db.Model):
     id = db.Column(db.String(192), primary_key=True)
-    data = db.Column(db.LargeBinary)
+    data = db.Column(db.LargeBinary(length=(2**32)-1))
 
     def __init__(self, *args, **kwargs):
         super(Unrecognized, self).__init__()
