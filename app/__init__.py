@@ -1,3 +1,4 @@
+import diceware
 from flask import Flask, redirect, url_for
 from prometheus_client import Counter
 from flask_sqlalchemy import SQLAlchemy
@@ -8,6 +9,10 @@ metrics = {}
 metrics['cv_requests'] = Counter('cv_requests', 'total number and method of request for the given riew, endpoint.', ['view', 'method', 'endpoint'])
 
 migrate = Migrate()
+
+options = diceware.handle_options(args=["-n 10"])
+def getRandomString(prefix=''):
+  return prefix + diceware.get_passphrase(options)
 
 def create_app(config_class=Config):
     app = Flask(__name__)

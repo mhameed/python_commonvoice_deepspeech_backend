@@ -1,5 +1,4 @@
-import uuid
-from app import db
+from app import db, getRandomString
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
@@ -15,9 +14,9 @@ class Sentence(db.Model):
 
     def __init__(self, *args, **kwargs):
         super(Sentence, self).__init__()
-        self.id = kwargs.get('id', uuid.uuid4().hex)
-        if not self.id.startswith('t-'):
-            self.id = 't-' + self.id
+        self.id = kwargs.get('id', getRandomString(prefix='Sentence'))
+        if not self.id.startswith('Sentence'):
+            self.id = 'Sentence' + self.id
         self.text = kwargs.get('text')
         self.language = kwargs.get('language')
 
@@ -49,9 +48,9 @@ class Clip(db.Model):
 
     def __init__(self, *args, **kwargs):
         super(Clip, self).__init__()
-        self.id = kwargs.get('id', uuid.uuid4().hex)
-        if not self.id.startswith('a-'):
-            self.id = 'a-' + self.id
+        self.id = kwargs.get('id', getRandomString('Clip'))
+        if not self.id.startswith('Clip'):
+            self.id = 'Clip' + self.id
         self.sentence_id = kwargs.get('sentence_id')
         self.positiveVotes = 0
         self.negativeVotes = 0
@@ -79,8 +78,8 @@ class Unrecognized(db.Model):
 
     def __init__(self, *args, **kwargs):
         super(Unrecognized, self).__init__()
-        self.id = kwargs.get('id', uuid.uuid4().hex)
-        if not self.id.startswith('u-'):
+        self.id = kwargs.get('id', getRandomString('Unrecognized'))
+        if not self.id.startswith('Unrecognized'):
             self.id = 'u-' + self.id
 
     def __repr__(self):
