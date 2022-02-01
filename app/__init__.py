@@ -24,6 +24,8 @@ def create_app(config_class=Config):
     app.register_blueprint(clips_bp, url_prefix=myPrefix+clips_bp.url_prefix)
     from .views.correct import bp as correct_bp
     app.register_blueprint(correct_bp, url_prefix=myPrefix+correct_bp.url_prefix)
+    from .views.docs import bp as docs_bp
+    app.register_blueprint(docs_bp, url_prefix=myPrefix+docs_bp.url_prefix)
     from .views.metrics import bp as metrics_bp
     app.register_blueprint(metrics_bp, url_prefix=metrics_bp.url_prefix)
     from .views.resources import bp as resources_bp
