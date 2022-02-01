@@ -60,7 +60,7 @@ def post():
     logger.debug(f"post: associating {c.id} with {s.id}, which has a text of {s.text}")
     return jsonify(filePrefix=c.id)
 
-metrics['cv_requests'].labels(method='post', endpoint='/', view='clips')
+metrics['cv_requests'].labels(method='get', endpoint='/', view='clips')
 @bp.route('', methods=['GET'])
 def get():
     metrics['cv_requests'].labels(method='get', endpoint='/', view='clips').inc()
