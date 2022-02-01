@@ -17,10 +17,10 @@ def get(id):
     metrics['cv_requests'].labels(method='get', endpoint='/{id}', view='resources').inc()
     metrics['cv_requests'].labels(method='get', endpoint=f'/{id}', view='resources').inc()
     logger.debug(f"get: Received a request with id:{id}")
-    if id.startswith('u-'):
+    if id.startswith('Unrecognized'):
         u = Unrecognized.query.filter(Unrecognized.id==id).first()
         return Response(u.data, mimetype='audio/ogg')
-    elif id.startswith('a-'):
+    elif id.startswith('Clip'):
         c = Clip.query.filter(Clip.id==id).first()
         return Response(c.data, mimetype='audio/ogg')
     logger.debug(f"get: Could not find resource with id:{id}")
