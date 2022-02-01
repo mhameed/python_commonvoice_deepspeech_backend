@@ -61,7 +61,7 @@ def post():
     if not request.content_type.lower().startswith('audio/'):
         return make_response(jsonify(status='Expected "content-type: audio/*" header'), 400)
     candidates = int(request.headers.get('candidates',1))
-    details = request.headers.get('details','False') == 'True'
+    details = request.headers.get('details','False').lower() == 'true'
     # read the mono 16khz wav file into a numpy array suitable for deepspeech:
     audio=np.frombuffer((ffmpeg_cmd << request.get_data() ).popen().stdout.read(), np.int16)
     if details:
