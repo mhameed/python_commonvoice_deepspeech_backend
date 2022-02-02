@@ -108,7 +108,7 @@ def get():
             break
     if resp is []:
         logger.debug("get: returning []")
-        return make_response(jsonify(status='No result found'), 404)
+        return make_response(jsonify(resp), 404)
     logger.debug("get: returning %s\n", json.dumps(resp))
     return jsonify(resp)
 

@@ -43,7 +43,7 @@ def get():
 
     u = Unrecognized.query.filter(_sa.and_(Unrecognized.user==g.user, Unrecognized.language==g.language)).first()
     if not u:
-        return make_response(jsonify(status='No unrecognized audio clips.'), 404)
+        return make_response(jsonify([]), 404)
     d = {}
     d['id'] = u.id
     d['audioSrc'] = 'https://cv.hameed.info' + url_for('resources.get', id=u.id, language=g.language, user=g.user)

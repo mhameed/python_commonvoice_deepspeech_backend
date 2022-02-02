@@ -39,7 +39,7 @@ def get():
         if len(resp) == count: break
     if resp is []:
         logger.debug(f"get: returning {resp}")
-        return make_response(jsonify(status='No result found'), 404)
+        return make_response(jsonify(resp), 404)
     logger.debug(f"get: returning {resp}")
     return jsonify(resp)
 
