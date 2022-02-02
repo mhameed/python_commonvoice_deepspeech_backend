@@ -1,9 +1,10 @@
 import logging
 import sqlalchemy as _sa
-from flask import Blueprint, g, jsonify, make_response, request, Response
-from sqlalchemy.exc import IntegrityError
+from app import db, getMetric
+from flask import Blueprint, g, jsonify, make_response, request, Response, url_for
 from plumbum.cmd import ffmpeg
-from app import db, metrics
+from prometheus_client import Counter
+from sqlalchemy.exc import IntegrityError
 from ..models import Clip, Sentence, Unrecognized
 
 logger = logging.getLogger('cv.correct')
@@ -11,10 +12,17 @@ ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-f', 'ogg', '-']
 
 bp = Blueprint('correct', __name__, url_prefix='/correct')
 
-metrics['cv_requests'].labels(method='post', endpoint='/', view='correct')
 @bp.route('', methods=['POST'])
 def post():
-    metrics['cv_requests'].labels(method='post', endpoint='/', view='correct').inc()
+    metric = getMetric(
+        name='commonvoice_requests',
+        typ=Counter,
+        labels={'method':request.method,
+            'endpoint': url_for(request.endpoint, language=g.language, user=g.user)
+        }
+    )
+    metric.inc()
+
     if request.content_type.lower().startswith('audio/'):
         sentence = urllib.parse.unquote(request.headers.get('sentence', ''))
         logger.debug(f"post: received header with sentence:{sentence}")

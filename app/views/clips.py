@@ -2,11 +2,12 @@ import json
 import logging
 import sqlalchemy as _sa
 import urllib
+from app import db, getMetric
 from flask import Blueprint, g, jsonify, make_response, request, Response, url_for 
+from plumbum.cmd import ffmpeg
+from prometheus_client import Counter
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import func
-from plumbum.cmd import ffmpeg
-from app import db, metrics
 from ..models import Clip, Sentence
 
 logger = logging.getLogger('cv.clips')
@@ -15,11 +16,17 @@ ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-f', 'ogg', '-']
 
 bp = Blueprint('clips', __name__, url_prefix='/clips')
 
-metrics['cv_requests'].labels(method='post', endpoint='/{id}/votes', view='clips')
 @bp.route('/<id>/votes', methods=['POST'])
 def vote(id):
-    metrics['cv_requests'].labels(method='post', endpoint='/{id}/votes', view='clips').inc()
-    metrics['cv_requests'].labels(method='post', endpoint=f'/{id}/votes', view='clips').inc()
+    metric = getMetric(
+        name='commonvoice_requests',
+        typ=Counter,
+        labels={'method':request.method,
+            'endpoint': url_for(request.endpoint, language=g.language, user=g.user, id=id)
+        }
+    )
+    metric.inc()
+
     logger.debug(f"vote: received an id of:{id}")
     c = Clip.query.filter(Clip.id==id).first()
     if not c:
@@ -36,10 +43,17 @@ def vote(id):
     c.save()
     return jsonify(glob=c.id+'/'+c.sentence.id)
 
-metrics['cv_requests'].labels(method='post', endpoint='/', view='clips')
 @bp.route('', methods=['POST'])
 def post():
-    metrics['cv_requests'].labels(method='post', endpoint='/', view='clips').inc()
+    metric = getMetric(
+        name='commonvoice_requests',
+        typ=Counter,
+        labels={'method':request.method,
+            'endpoint': url_for(request.endpoint, language=g.language, user=g.user)
+        }
+    )
+    metric.inc()
+
     if not request.content_type.lower().startswith('audio/'):
         return make_response(jsonify(status='Expected "content-type: audio/*" header'), 400)
     sentence_id = request.headers.get('sentence_id')
@@ -59,10 +73,17 @@ def post():
     logger.debug(f"post: associating {c.id} with {s.id}, which has a text of {s.text}")
     return jsonify(filePrefix=c.id)
 
-metrics['cv_requests'].labels(method='get', endpoint='/', view='clips')
 @bp.route('', methods=['GET'])
 def get():
-    metrics['cv_requests'].labels(method='get', endpoint='/', view='clips').inc()
+    metric = getMetric(
+        name='commonvoice_requests',
+        typ=Counter,
+        labels={'method':request.method,
+            'endpoint': url_for(request.endpoint, language=g.language, user=g.user)
+        }
+    )
+    metric.inc()
+
     count = request.args.get('count', '1')
     try:
         count = int(count)

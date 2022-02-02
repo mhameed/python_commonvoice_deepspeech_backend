@@ -1,22 +1,28 @@
 import logging
 import markdown
 import os
-from app import metrics
-from flask import Blueprint, make_response
+from app import getMetric
+from flask import Blueprint, make_response, request, url_for
 from markupsafe import Markup
+from prometheus_client import Counter
 
 logger = logging.getLogger('cv.docs')
 
 
 bp = Blueprint('docs', __name__, url_prefix='/docs')
 
-metrics['cv_requests'].labels(method='get', endpoint='/{id}', view='docs')
-metrics['cv_requests'].labels(method='get', endpoint='/', view='docs')
 @bp.route('/<id>', methods=['GET'])
 @bp.route('/', methods=['GET'])
 @bp.route('', methods=['GET'])
 def get(id='index'):
-    metrics['cv_requests'].labels(method='get', endpoint=f'/{id}', view='docs').inc()
+    metric = getMetric(
+        name='commonvoice_requests',
+        typ=Counter,
+        labels={'method':request.method,
+            'endpoint': url_for(request.endpoint, id=id)
+        }
+    )
+    metric.inc()
     fname = os.path.join(os.getcwd(), 'docs', f'{id}.md')
     with open(fname) as f:
         mdText = f.read()

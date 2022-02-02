@@ -1,6 +1,6 @@
 from flask import Blueprint, Response
 from prometheus_client import generate_latest
-from app import db, metrics
+from app import db
 
 bp = Blueprint('metrics', __name__, url_prefix='/metrics')
 
