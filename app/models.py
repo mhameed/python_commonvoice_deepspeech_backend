@@ -9,6 +9,7 @@ from sqlalchemy import UniqueConstraint
 class Sentence(db.Model):
     id = db.Column(db.String(192), primary_key=True)
     language = db.Column(db.String(7), nullable=False, default='en')
+    user = db.Column(db.String(20), nullable=False)
     text = db.Column(db.String(255), nullable=False, unique=True)
     clips = relationship("Clip", back_populates="sentence")
 
@@ -19,15 +20,16 @@ class Sentence(db.Model):
             self.id = 'Sentence' + self.id
         self.text = kwargs.get('text')
         self.language = kwargs.get('language')
+        self.user = kwargs.get('user')
 
     def __repr__(self):
         return self.__str__()
 
     def __str__(self):
-        return "<sentence('%s', '%s', '%s')>" % (self.id, self.language, self.text)
+        return "<sentence('%s', '%s', '%s', '%s')>" % (self.id, self.language, self.user, self.text)
 
     def to_dict(self):
-        return {'id':self.id, 'language':self.language, 'text':self.text}
+        return {'id':self.id, 'language':self.language, 'text':self.text, 'user':self.user}
 
     def delete(self):
         db.session.delete(self)
@@ -42,6 +44,8 @@ class Clip(db.Model):
     id = db.Column(db.String(192), primary_key=True)
     sentence_id = db.Column(db.String(192), ForeignKey('sentence.id'))
     sentence = relationship("Sentence", back_populates="clips")
+    language = db.Column(db.String(7), nullable=False, default='en')
+    user = db.Column(db.String(20), nullable=False)
     positiveVotes = db.Column(db.Integer)
     negativeVotes = db.Column(db.Integer)
     data = db.Column(db.LargeBinary(length=(2**32)-1))
@@ -52,6 +56,8 @@ class Clip(db.Model):
         if not self.id.startswith('Clip'):
             self.id = 'Clip' + self.id
         self.sentence_id = kwargs.get('sentence_id')
+        self.user = kwargs.get('user')
+        self.language = kwargs.get('language')
         self.positiveVotes = 0
         self.negativeVotes = 0
 
@@ -59,10 +65,10 @@ class Clip(db.Model):
         return self.__str__()
 
     def __str__(self):
-        return "<clip('%s', '%s', %d, %d)>" % (self.id, self.sentence_id, self.positiveVotes, self.negativeVotes)
+        return "<clip('%s', '%s', '%s', '%s', %d, %d)>" % (self.id, self.sentence_id, self.language, self.user, self.positiveVotes, self.negativeVotes)
 
     def to_dict(self):
-        return {'id':self.id, 'sentence_id':self.sentence_id, 'positive':self.positiveVotes, 'negative':self.negativeVotes}
+        return {'id':self.id, 'sentence_id':self.sentence_id, 'positive':self.positiveVotes, 'negative':self.negativeVotes, 'language':self.language, 'user':self.user}
 
     def delete(self):
         db.session.delete(self)
@@ -74,6 +80,8 @@ class Clip(db.Model):
 
 class Unrecognized(db.Model):
     id = db.Column(db.String(192), primary_key=True)
+    language = db.Column(db.String(7), nullable=False, default='en')
+    user = db.Column(db.String(20), nullable=False)
     data = db.Column(db.LargeBinary(length=(2**32)-1))
 
     def __init__(self, *args, **kwargs):
@@ -81,15 +89,17 @@ class Unrecognized(db.Model):
         self.id = kwargs.get('id', getRandomString('Unrecognized'))
         if not self.id.startswith('Unrecognized'):
             self.id = 'Unrecognized' + self.id
+        self.user = kwargs.get('user')
+        self.language = kwargs.get('language')
 
     def __repr__(self):
         return self.__str__()
 
     def __str__(self):
-        return "<unrecognized('%s',)>" % self.id
+        return "<unrecognized('%s', '%s', '%s')>" % (self.id, self.language, self.user)
 
     def to_dict(self):
-        return {'id':self.id}
+        return {'id':self.id, 'language':self.language, 'user':self.user}
 
     def delete(self):
         db.session.delete(self)
