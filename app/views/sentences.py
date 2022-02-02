@@ -1,7 +1,8 @@
 import logging
+import sqlalchemy as _sa
 from flask import Blueprint, g, jsonify, make_response, request, Response, url_for
 from sqlalchemy.exc import IntegrityError
-from  sqlalchemy.sql.expression import func
+from sqlalchemy.sql.expression import func
 from app import db, metrics
 from ..models import Sentence
 
@@ -24,7 +25,7 @@ def get():
         count = 100
     logger.debug(f"get: Received a request count:{count}")
     resp = []
-    for s in Sentence.query.order_by(func.random()):
+    for s in Sentence.query.filter(_sa.and_(Sentence.user==g.user, Sentence.language==g.language)).order_by(func.random()):
         if len(s.clips) > 1: continue
         resp.append(s.to_dict())
         if len(resp) == count: break
@@ -42,7 +43,7 @@ def post():
     text = content['text']
     if not text:
         return make_response(jsonify(status='No text provided'), 400)
-    entry = Sentence(text=text)
+    entry = Sentence(text=text, language=g.language, user=g.user)
     try:
         entry.save()
     except IntegrityError:
