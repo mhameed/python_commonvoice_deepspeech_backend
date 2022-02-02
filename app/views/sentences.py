@@ -1,13 +1,10 @@
-import uuid
-import json
-import sys
-import os
+import logging
 from flask import Blueprint, g, jsonify, make_response, request, Response, url_for
 from sqlalchemy.exc import IntegrityError
 from  sqlalchemy.sql.expression import func
 from app import db, metrics
 from ..models import Sentence
-import logging
+
 logger = logging.getLogger('cv.sentences')
 
 bp = Blueprint('sentences', __name__, url_prefix='/sentences')

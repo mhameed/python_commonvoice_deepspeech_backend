@@ -1,13 +1,11 @@
-import uuid
-import json
-import sys
-import os
+import logging
 from flask import Blueprint, g, jsonify, make_response, request, Response
 from sqlalchemy.exc import IntegrityError
 from plumbum.cmd import ffmpeg
 from app import db, metrics
 from ..models import Clip, Sentence, Unrecognized
 
+logger = logging.getLogger('cv.correct')
 ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-f', 'ogg', '-']
 
 bp = Blueprint('correct', __name__, url_prefix='/correct')

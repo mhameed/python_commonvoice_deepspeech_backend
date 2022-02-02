@@ -1,10 +1,12 @@
+import logging
+import numpy as np
 import os
 from app import db, metrics
+from deepspeech import Model, version
 from flask import Blueprint, jsonify, make_response, request, Response
 from plumbum.cmd import ffmpeg
-import numpy as np
 
-from deepspeech import Model, version
+logger = logging.getLogger('cv.transcribe')
 
 ds = Model(os.path.join(os.getcwd(), 'deepspeech_model', 'ds.pbmm'))
 ds.enableExternalScorer(os.path.join(os.getcwd(), 'deepspeech_model', 'ds.scorer'))

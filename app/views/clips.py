@@ -1,15 +1,12 @@
-import uuid
-import json
+import logging
 import urllib
-import sys
-import os
 from flask import Blueprint, g, jsonify, make_response, request, Response, url_for 
 from sqlalchemy.exc import IntegrityError
 from  sqlalchemy.sql.expression import func
 from plumbum.cmd import ffmpeg
 from app import db, metrics
 from ..models import Clip, Sentence
-import logging
+
 logger = logging.getLogger('cv.clips')
 
 ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-f', 'ogg', '-']
