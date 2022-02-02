@@ -1,19 +1,25 @@
 import logging
 import sqlalchemy as _sa
 from flask import Blueprint, g, jsonify, make_response, request, Response, url_for
+from prometheus_client import Counter
 from sqlalchemy.exc import IntegrityError
-from app import db, metrics
+from app import db, getMetric
 from ..models import Clip
 
 logger = logging.getLogger('cv.resources')
 
 bp = Blueprint('resources', __name__, url_prefix='/resources')
-metrics['cv_requests'].labels(method='get', endpoint='/{id}', view='resources')
 @bp.route('/<id>', methods=['GET'])
 def get(id):
-    # two metrics, one that includes the id, and one that has the template of the id so that we can count how many times resources itself has been called regardless of id
-    metrics['cv_requests'].labels(method='get', endpoint='/{id}', view='resources').inc()
-    metrics['cv_requests'].labels(method='get', endpoint=f'/{id}', view='resources').inc()
+    metric = getMetric(
+        name='commonvoice_requests',
+        typ=Counter,
+        labels={'method':request.method,
+            'endpoint': url_for(request.endpoint, language=g.language, user=g.user, id=id)
+        }
+    )
+    metric.inc()
+
     logger.debug(f"get: Received a request with id:{id}")
     if id.startswith('Unrecognized'):
         u = Unrecognized.query.filter(_sa.and_(Unrecognized.user==g.user, Unrecognized.language==g.language, Unrecognized.id==id)).first()

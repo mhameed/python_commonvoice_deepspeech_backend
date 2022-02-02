@@ -6,7 +6,13 @@ from flask_migrate import Migrate
 from config import Config
 db = SQLAlchemy()
 metrics = {}
-metrics['cv_requests'] = Counter('cv_requests', 'total number and method of request for the given riew, endpoint.', ['view', 'method', 'endpoint'])
+
+def getMetric(name='', typ=Counter, labels={}):
+    key = name + ' '.join(sorted(labels.keys()))
+    if key not in metrics:
+        metrics[key] = typ(name, '', labels.keys())
+        metrics[key].labels(**labels)
+    return metrics[key].labels(**labels)
 
 migrate = Migrate()
 
