@@ -80,7 +80,7 @@ class Unrecognized(db.Model):
         super(Unrecognized, self).__init__()
         self.id = kwargs.get('id', getRandomString('Unrecognized'))
         if not self.id.startswith('Unrecognized'):
-            self.id = 'u-' + self.id
+            self.id = 'Unrecognized' + self.id
 
     def __repr__(self):
         return self.__str__()
