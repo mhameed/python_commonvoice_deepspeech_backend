@@ -1,6 +1,6 @@
 import os
 from app import db, metrics
-from flask import Blueprint, jsonify, request, make_response, Response
+from flask import Blueprint, jsonify, make_response, request, Response
 from plumbum.cmd import ffmpeg
 import numpy as np
 

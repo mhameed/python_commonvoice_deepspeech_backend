@@ -2,7 +2,7 @@ import uuid
 import json
 import sys
 import os
-from flask import Blueprint, g, jsonify, abort, request, make_response, url_for, render_template, Response
+from flask import Blueprint, g, jsonify, make_response, request, Response, url_for
 from sqlalchemy.exc import IntegrityError
 from app import db, metrics
 from ..models import Clip
