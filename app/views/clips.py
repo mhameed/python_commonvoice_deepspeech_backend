@@ -74,13 +74,18 @@ def get():
     elif count > 100:
         count = 100
     resp = []
-    for c in  Clip.query.filter(Clip.positiveVotes+Clip.negativeVotes < 2).order_by(func.random()).limit(count):
-        d = {}
-        d['id'] = c.id
-        d['audioSrc'] = 'https://cv.hameed.info' + url_for('resources.get', id=c.id)
-        d['glob'] = c.id+'/'+c.sentence.id
-        d['sentence'] = {'id':c.sentence.id, 'text':c.sentence.text}
-        resp.append(d)
+    voteTotal = 0
+    while voteTotal<6:
+        for c in  Clip.query.filter(Clip.positiveVotes+Clip.negativeVotes == voteTotal).order_by(func.random()).limit(count):
+            d = {}
+            d['id'] = c.id
+            d['audioSrc'] = 'https://cv.hameed.info' + url_for('resources.get', id=c.id)
+            d['glob'] = c.id+'/'+c.sentence.id
+            d['sentence'] = {'id':c.sentence.id, 'text':c.sentence.text}
+            resp.append(d)
+        voteTotal += 1
+        if len(resp) == count:
+            break
     if resp is []:
         logger.debug("get: returning []")
         return make_response(jsonify(status='No result found'), 404)
