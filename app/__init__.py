@@ -16,8 +16,8 @@ def getRandomString(prefix=''):
 
 
 def get_language_and_user(endpoint, values):
-    g.language = values.pop('language')
-    g.user = values.pop('user')
+    g.language = values.pop('language').title()
+    g.user = values.pop('user').title()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
