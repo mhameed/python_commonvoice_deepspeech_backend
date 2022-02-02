@@ -1,8 +1,10 @@
+import json
 import logging
+import sqlalchemy as _sa
 import urllib
 from flask import Blueprint, g, jsonify, make_response, request, Response, url_for 
 from sqlalchemy.exc import IntegrityError
-from  sqlalchemy.sql.expression import func
+from sqlalchemy.sql.expression import func
 from plumbum.cmd import ffmpeg
 from app import db, metrics
 from ..models import Clip, Sentence
@@ -43,15 +45,15 @@ def post():
     sentence_id = request.headers.get('sentence_id')
     if sentence_id:
         logger.debug(f"post: received header with sentence_id:{sentence_id}")
-        s = Sentence.query.filter(Sentence.id==sentence_id).first()
+        s = Sentence.query.filter(_sa.and_(Sentence.id==sentence_id, Sentence.user==g.user, Sentence.language==g.language)).first()
     else:
         sentence = urllib.parse.unquote(request.headers.get('sentence'))
         logger.debug(f"post: received header with sentence:{sentence}")
-        s = Sentence.query.filter(Sentence.text==sentence).first()
+        s = Sentence.query.filter(_sa.and_(Sentence.user==g.user, Sentence.language==g.language, Sentence.text==sentence)).first()
     if not s:
         logger.debug(f"post: could not find a sentence with text:{sentence} or id:{sentence_id}")
         return make_response(jsonify(status='No such sentence', sentence_id=sentence_id, sentence=sentence), 404)
-    c = Clip(sentence_id=s.id)
+    c = Clip(sentence_id=s.id, language=g.language, user=g.user)
     c.data = (ffmpeg_cmd << request.get_data() ).popen().stdout.read()
     c.save()
     logger.debug(f"post: associating {c.id} with {s.id}, which has a text of {s.text}")
@@ -73,7 +75,7 @@ def get():
     resp = []
     voteTotal = 0
     while voteTotal<6:
-        for c in  Clip.query.filter(Clip.positiveVotes+Clip.negativeVotes == voteTotal).order_by(func.random()).limit(count):
+        for c in  Clip.query.filter(_sa.and_(Clip.user==g.user, Clip.language==g.language, Clip.positiveVotes+Clip.negativeVotes == voteTotal)).order_by(func.random()).limit(count):
             d = {}
             d['id'] = c.id
             d['audioSrc'] = 'https://cv.hameed.info' + url_for('resources.get', id=c.id, language=g.language, user=g.user)

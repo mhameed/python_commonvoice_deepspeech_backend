@@ -1,4 +1,5 @@
 import logging
+import sqlalchemy as _sa
 from flask import Blueprint, g, jsonify, make_response, request, Response, url_for
 from sqlalchemy.exc import IntegrityError
 from plumbum.cmd import ffmpeg
@@ -16,7 +17,7 @@ def post():
     metrics['cv_requests'].labels(method='post', endpoint='/', view='unrecognized').inc()
     if not request.content_type.lower().startswith('audio/'):
         return make_response(jsonify(status='Expected "content-type: audio/*" header'), 400)
-    u = Unrecognized()
+    u = Unrecognized(user=g.user, language=g.language)
     u.data = (ffmpeg_cmd << request.get_data() ).popen().stdout.read()
     u.save()
     return jsonify(filePrefix=u.id)
@@ -25,7 +26,7 @@ metrics['cv_requests'].labels(method='get', endpoint='/', view='unrecognized')
 @bp.route('', methods=['GET'])
 def get():
     metrics['cv_requests'].labels(method='get', endpoint='/', view='unrecognized').inc()
-    u = Unrecognized.query.first()
+    u = Unrecognized.query.filter(_sa.and_(Unrecognized.user==g.user, Unrecognized.language==g.language)).first()
     if not u:
         return make_response(jsonify(status='No unrecognized audio clips.'), 404)
     d = {}
