@@ -35,7 +35,7 @@ def vote(id):
         c.negativeVotes += 1
         logger.debug(f"vote: clipid:{id} negative incremented")
     c.save()
-    return jsonify(status='ok')
+    return jsonify(glob=c.id+'/'+c.sentence.id)
 
 metrics['cv_requests'].labels(method='post', endpoint='/', view='clips')
 @bp.route('', methods=['POST'])
