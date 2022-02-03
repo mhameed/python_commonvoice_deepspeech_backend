@@ -58,9 +58,9 @@ def post():
     text = content['text']
     if not text:
         return make_response(jsonify(status='No text provided'), 400)
-    entry = Sentence(text=text, language=g.language, user=g.user)
+    entry = Sentence(text=text, language=g.language, user=g.user, source=content.get('source', ''))
     try:
         entry.save()
     except IntegrityError:
         return make_response(jsonify(status='Duplicate entry'), 400)
-    return jsonify(id=entry.id, text=text)
+    return jsonify(id=entry.id, text=text, source=content.get('source', ''))
