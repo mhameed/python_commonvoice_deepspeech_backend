@@ -26,6 +26,7 @@ def post():
 
     if request.content_type.lower().startswith('audio/'):
         sentence = urllib.parse.unquote(request.headers.get('sentence', ''))
+        source = urllib.parse.unquote(request.headers.get('source', ''))
         logger.debug(f"post: received header with sentence:{sentence}")
         if not sentence or sentence.isspace():
             return make_response(jsonify(status='Expected "sentence: <text>" header'), 400)
@@ -33,7 +34,7 @@ def post():
             s = Sentence.query.filter(_sa.and_(Sentence.language==g.language, Sentence.user==g.user, Sentence.text==sentence)).first()
         if not s:
             logger.debug(f"post: could not find a sentence with text:{sentence}, going to create one.")
-            s = Sentence(text=sentence, language=g.language, user=g.user)
+            s = Sentence(text=sentence, language=g.language, user=g.user, source=source)
             s.save()
         c = Clip(sentence_id=s.id, language=g.language, user=g.user)
         c.data = (ffmpeg_cmd << request.get_data() ).popen().stdout.read()
