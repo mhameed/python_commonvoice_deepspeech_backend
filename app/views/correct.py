@@ -38,6 +38,7 @@ def post():
             s.save()
         c = Clip(sentence_id=s.id, language=g.language, user=g.user)
         c.data = (ffmpeg_cmd << request.get_data() ).popen().stdout.read()
+        c.positiveVotes = 1
         c.save()
         logger.debug(f"post: associating {c.id} with {s.id}, which has a text of {s.text}")
         return jsonify(filePrefix=c.id)
@@ -58,6 +59,7 @@ def post():
             s.save()
         c = Clip(sentence_id=s.id, language=g.language, user=g.user)
         c.data = u.data
+        c.positiveVotes = 1
         c.save()
         u.delete()
         return make_response(jsonify(status='ok, all done'), 200)
