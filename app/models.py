@@ -7,10 +7,13 @@ from sqlalchemy import Table, Column, Integer, ForeignKey
 from sqlalchemy import UniqueConstraint
 
 class Sentence(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint('text', 'user', name='_text_user_uc'),
+    )
     id = db.Column(db.String(192), primary_key=True)
     language = db.Column(db.String(7), nullable=False, default='en')
     user = db.Column(db.String(20), nullable=False)
-    text = db.Column(db.String(255), nullable=False, unique=True)
+    text = db.Column(db.String(500), nullable=False)
     source = db.Column(db.String(100))
     clips = relationship("Clip", back_populates="sentence")
 
@@ -51,6 +54,8 @@ class Clip(db.Model):
     positiveVotes = db.Column(db.Integer)
     negativeVotes = db.Column(db.Integer)
     data = db.Column(db.LargeBinary(length=(2**32)-1))
+    dataset_version = db.Column(db.String(7), nullable=False, default='next')
+    dataset_type = db.Column(db.String(7), nullable=False, default='none')
 
     def __init__(self, *args, **kwargs):
         super(Clip, self).__init__()
