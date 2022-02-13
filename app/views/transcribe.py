@@ -4,15 +4,15 @@ import os
 from app import db, getMetric
 from deepspeech import Model, version
 from flask import Blueprint, g, jsonify, make_response, request, Response, url_for
-from plumbum.cmd import ffmpeg
+from plumbum.cmd import ffmpeg, sox
 from prometheus_client import Counter
+from tempfile import mkstemp
 
 logger = logging.getLogger('cv.transcribe')
 
 ds = Model(os.path.join(os.getcwd(), 'deepspeech_model', 'ds.pbmm'))
 ds.enableExternalScorer(os.path.join(os.getcwd(), 'deepspeech_model', 'ds.scorer'))
 
-ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-b:a', '16', '-ar', '16000', '-f', 'wav', '-']
 
 def words_from_candidate_transcript(metadata):
     word = ""
@@ -72,8 +72,19 @@ def post():
         return make_response(jsonify(status='Expected "content-type: audio/*" header'), 400)
     candidates = int(request.headers.get('candidates',1))
     details = request.headers.get('details','False').lower() == 'true'
+    _, tmp_fname1 = mkstemp(prefix='ds_transcriber.', suffix='.wav')
+    _, tmp_fname2 = mkstemp(prefix='ds_transcriber.', suffix='.wav')
+    ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-b:a', '16', '-ar', '16000', '-y', tmp_fname1]
+    sox_cmd = sox[tmp_fname1, tmp_fname2, 'norm', '-0.1']
+    # convert whatever we get into 16 bit 16khz mono wav:
+    (ffmpeg_cmd << request.get_data() )()
+    # normalize the audio:
+    sox_cmd()
+
     # read the mono 16khz wav file into a numpy array suitable for deepspeech:
-    audio=np.frombuffer((ffmpeg_cmd << request.get_data() ).popen().stdout.read(), np.int16)
+    audio = np.fromfile(tmp_fname2, np.int16)
+    os.remove(tmp_fname1)
+    os.remove(tmp_fname2)
     if details:
         return make_response(jsonify(metadata_json_output(ds.sttWithMetadata(audio, candidates))), 200)
     data = metadata_json_output(ds.sttWithMetadata(audio, candidates))
