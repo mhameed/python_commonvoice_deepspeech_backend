@@ -1,15 +1,16 @@
 import logging
+import os
 import sqlalchemy as _sa
 import urllib
 from app import db, getMetric
 from flask import Blueprint, g, jsonify, make_response, request, Response, url_for
-from plumbum.cmd import ffmpeg
+from plumbum.cmd import ffmpeg, sox
 from prometheus_client import Counter
 from sqlalchemy.exc import IntegrityError
+from tempfile import mkstemp
 from ..models import Clip, Sentence, Unrecognized
 
 logger = logging.getLogger('cv.correct')
-ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-f', 'ogg', '-']
 
 bp = Blueprint('correct', __name__, url_prefix='/correct')
 
@@ -37,7 +38,20 @@ def post():
             s = Sentence(text=sentence, language=g.language, user=g.user, source=source)
             s.save()
         c = Clip(sentence_id=s.id, language=g.language, user=g.user)
-        c.data = (ffmpeg_cmd << request.get_data() ).popen().stdout.read()
+        _, tmp_fname1 = mkstemp(prefix='ds_correct.', suffix='.wav')
+        _, tmp_fname2 = mkstemp(prefix='ds_correct.', suffix='.wav')
+        _, tmp_fname3 = mkstemp(prefix='ds_correct.', suffix='.ogg')
+        ffmpeg_in = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-y', tmp_fname1]
+        sox_mid = sox[tmp_fname1, tmp_fname2, 'norm', '-0.1']
+        ffmpeg_out = ffmpeg['-i', tmp_fname2, '-y', tmp_fname3]
+        (ffmpeg_in << request.get_data() )()
+        sox_mid()
+        ffmpeg_out()
+        with open(tmp_fname3, 'rb') as f:
+            c.data = f.read()
+        os.remove(tmp_fname1)
+        os.remove(tmp_fname2)
+        os.remove(tmp_fname3)
         c.positiveVotes = 1
         c.save()
         logger.debug(f"post: associating {c.id} with {s.id}, which has a text of {s.text}")
