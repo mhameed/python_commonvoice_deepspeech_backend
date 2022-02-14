@@ -4,6 +4,7 @@ diceware==0.9.6
 Flask==2.0.3
 Flask-Migrate==3.1.0
 Flask-SQLAlchemy==2.5.1
+gunicorn==20.1.0
 Mako==1.1.4
 Markdown==3.3.6
 MarkupSafe==2.0.1
@@ -12,5 +13,4 @@ numpy==1.22.2
 plumbum==1.7.2
 prometheus-client==0.13.1
 SQLAlchemy==1.4.31
-waitress==2.0.0
 Werkzeug==2.0.3
