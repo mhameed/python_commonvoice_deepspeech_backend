@@ -57,14 +57,10 @@ def post():
 
     if not request.content_type.lower().startswith('audio/'):
         return make_response(jsonify(status='Expected "content-type: audio/*" header'), 400)
-    sentence_id = request.headers.get('sentence_id')
+    sentence_id = request.headers.get('sentence-id')
     if sentence_id:
         logger.debug(f"post: received header with sentence_id:{sentence_id}")
         s = Sentence.query.filter(_sa.and_(Sentence.id==sentence_id, Sentence.user==g.user, Sentence.language==g.language)).first()
-    else:
-        sentence = urllib.parse.unquote(request.headers.get('sentence'))
-        logger.debug(f"post: received header with sentence:{sentence}")
-        s = Sentence.query.filter(_sa.and_(Sentence.user==g.user, Sentence.language==g.language, Sentence.text==sentence)).first()
     if not s:
         logger.debug(f"post: could not find a sentence with text:{sentence} or id:{sentence_id}")
         return make_response(jsonify(status='No such sentence', sentence_id=sentence_id, sentence=sentence), 404)
