@@ -34,7 +34,7 @@ def get():
     logger.debug(f"get: Received a request count:{count}")
     resp = []
     for s in Sentence.query.filter(_sa.and_(Sentence.user==g.user, Sentence.language==g.language)).order_by(func.random()):
-        if len(s.clips) > 1: continue
+        if len(s.clips) > 0: continue
         resp.append(s.to_dict())
         if len(resp) == count: break
     if resp is []:
