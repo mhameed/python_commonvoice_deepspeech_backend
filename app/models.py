@@ -7,9 +7,6 @@ from sqlalchemy import Table, Column, Integer, ForeignKey
 from sqlalchemy import UniqueConstraint
 
 class Sentence(db.Model):
-    __table_args__ = (
-        db.UniqueConstraint('text', 'user', name='_text_user_uc'),
-    )
     id = db.Column(db.String(192), primary_key=True)
     language = db.Column(db.String(7), nullable=False, default='en')
     user = db.Column(db.String(20), nullable=False)
