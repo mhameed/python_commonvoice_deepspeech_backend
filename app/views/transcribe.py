@@ -1,11 +1,9 @@
 import logging
 import numpy as np
 import os
-from app import db, getMetric
 from deepspeech import Model, version
 from flask import Blueprint, g, jsonify, make_response, request, Response, url_for
 from plumbum.cmd import ffmpeg, sox
-from prometheus_client import Counter
 from tempfile import mkstemp
 
 logger = logging.getLogger('cv.transcribe')
@@ -59,15 +57,6 @@ bp = Blueprint('transcribe', __name__, url_prefix='/transcribe')
 
 @bp.route('', methods=['POST'])
 def post():
-    metric = getMetric(
-        name='commonvoice_requests',
-        typ=Counter,
-        labels={'method':request.method,
-            'endpoint': url_for(request.endpoint, language=g.language, user=g.user)
-        }
-    )
-    metric.inc()
-
     if not request.content_type.lower().startswith('audio/'):
         return make_response(jsonify(status='Expected "content-type: audio/*" header'), 400)
     candidates = int(request.headers.get('candidates',1))
