@@ -11,6 +11,6 @@ MarkupSafe==2.0.1
 mysqlclient==2.1.0
 numpy==1.22.2
 plumbum==1.7.2
-prometheus-client==0.13.1
+prometheus-flask-exporter
 SQLAlchemy==1.4.31
 Werkzeug==2.0.3
