@@ -3,10 +3,9 @@ import logging
 import os
 import sqlalchemy as _sa
 import urllib
-from app import db, getMetric
+from app import db 
 from flask import Blueprint, g, jsonify, make_response, request, Response, url_for 
 from plumbum.cmd import ffmpeg, sox
-from prometheus_client import Counter
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import func
 from tempfile import mkstemp
@@ -19,15 +18,6 @@ bp = Blueprint('clips', __name__, url_prefix='/clips')
 
 @bp.route('/<id>/votes', methods=['POST'])
 def vote(id):
-    metric = getMetric(
-        name='commonvoice_requests',
-        typ=Counter,
-        labels={'method':request.method,
-            'endpoint': url_for(request.endpoint, language=g.language, user=g.user, id=id)
-        }
-    )
-    metric.inc()
-
     logger.debug(f"vote: received an id of:{id}")
     c = Clip.query.filter(Clip.id==id).first()
     if not c:
@@ -46,15 +36,6 @@ def vote(id):
 
 @bp.route('', methods=['POST'])
 def post():
-    metric = getMetric(
-        name='commonvoice_requests',
-        typ=Counter,
-        labels={'method':request.method,
-            'endpoint': url_for(request.endpoint, language=g.language, user=g.user)
-        }
-    )
-    metric.inc()
-
     if not request.content_type.lower().startswith('audio/'):
         return make_response(jsonify(status='Expected "content-type: audio/*" header'), 400)
     sentence_id = request.headers.get('sentence-id')
@@ -85,15 +66,6 @@ def post():
 
 @bp.route('', methods=['GET'])
 def get():
-    metric = getMetric(
-        name='commonvoice_requests',
-        typ=Counter,
-        labels={'method':request.method,
-            'endpoint': url_for(request.endpoint, language=g.language, user=g.user)
-        }
-    )
-    metric.inc()
-
     count = request.args.get('count', '1')
     try:
         count = int(count)

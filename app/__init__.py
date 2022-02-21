@@ -1,18 +1,13 @@
 import diceware
 from flask import Flask, g, redirect, url_for
-from prometheus_client import Counter
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from prometheus_flask_exporter.multiprocess import GunicornPrometheusMetrics
 from config import Config
-db = SQLAlchemy()
-metrics = {}
 
-def getMetric(name='', typ=Counter, labels={}):
-    key = name + ' '.join(sorted(labels.keys()))
-    if key not in metrics:
-        metrics[key] = typ(name, '', labels.keys())
-        metrics[key].labels(**labels)
-    return metrics[key].labels(**labels)
+db = SQLAlchemy()
+metrics = GunicornPrometheusMetrics.for_app_factory()
+
 
 migrate = Migrate()
 
@@ -39,8 +34,6 @@ def create_app(config_class=Config):
     app.register_blueprint(correct_bp, url_prefix=myPrefix+correct_bp.url_prefix)
     from .views.docs import bp as docs_bp
     app.register_blueprint(docs_bp, url_prefix=docs_bp.url_prefix)
-    from .views.metrics import bp as metrics_bp
-    app.register_blueprint(metrics_bp, url_prefix=metrics_bp.url_prefix)
     from .views.resources import bp as resources_bp
     resources_bp.url_value_preprocessor(get_language_and_user)
     app.register_blueprint(resources_bp, url_prefix=myPrefix+resources_bp.url_prefix)
@@ -53,5 +46,6 @@ def create_app(config_class=Config):
     from .views.unrecognized import bp as unrecognized_bp
     unrecognized_bp.url_value_preprocessor(get_language_and_user)
     app.register_blueprint(unrecognized_bp, url_prefix=myPrefix+unrecognized_bp.url_prefix)
+    metrics.init_app(app)
     print(app.url_map)
     return app

@@ -2,10 +2,9 @@ import logging
 import sqlalchemy as _sa
 from flask import Blueprint, g, jsonify, make_response, request, Response, url_for
 from plumbum.cmd import ffmpeg, sox
-from prometheus_client import Counter
 from sqlalchemy.exc import IntegrityError
 from tempfile import mkstemp
-from app import db, getMetric
+from app import db
 from ..models import Clip, Sentence, Unrecognized
 
 logger = logging.getLogger('cv.unrecognized')
@@ -14,15 +13,6 @@ bp = Blueprint('unrecognized', __name__, url_prefix='/unrecognized')
 
 @bp.route('', methods=['POST'])
 def post():
-    metric = getMetric(
-        name='commonvoice_requests',
-        typ=Counter,
-        labels={'method':request.method,
-            'endpoint': url_for(request.endpoint, language=g.language, user=g.user)
-        }
-    )
-    metric.inc()
-
     if not request.content_type.lower().startswith('audio/'):
         return make_response(jsonify(status='Expected "content-type: audio/*" header'), 400)
     u = Unrecognized(user=g.user, language=g.language)
@@ -45,15 +35,6 @@ def post():
 
 @bp.route('', methods=['GET'])
 def get():
-    metric = getMetric(
-        name='commonvoice_requests',
-        typ=Counter,
-        labels={'method':request.method,
-            'endpoint': url_for(request.endpoint, language=g.language, user=g.user)
-        }
-    )
-    metric.inc()
-
     u = Unrecognized.query.filter(_sa.and_(Unrecognized.user==g.user, Unrecognized.language==g.language)).first()
     if not u:
         return make_response(jsonify([]), 404)
