@@ -21,10 +21,11 @@ distribution and you find the corresponding list for your distribution
 please consider making a pull request with the information.
 
 
-- Python3.7 or newer
+- build-essential
+- ffmpeg
+- libmariadb-dev
+- mariadb-server
+- python3.7 or newer
 - python3-dev
 - python3-virtualenv 
-- build-essential
-- mariadb-server
-- ffmpeg
 - sox
