@@ -8,8 +8,7 @@ from tempfile import mkstemp
 
 logger = logging.getLogger('cv.transcribe')
 
-ds = Model(os.path.join(os.getcwd(), 'deepspeech_model', 'ds.pbmm'))
-ds.enableExternalScorer(os.path.join(os.getcwd(), 'deepspeech_model', 'ds.scorer'))
+ds = {}
 
 
 def words_from_candidate_transcript(metadata):
@@ -61,6 +60,14 @@ def post():
         return make_response(jsonify(status='Expected "content-type: audio/*" header'), 400)
     candidates = int(request.headers.get('candidates',1))
     details = request.headers.get('details','False').lower() == 'true'
+    model_name = f'{g.user}:{g.language}'
+    if model_name not in ds:
+        try:
+            ds[model_name] = Model(os.path.join(os.getcwd(), 'deepspeech_model', g.user, g.language, 'ds.pbmm'))
+            ds[model_name].enableExternalScorer(os.path.join(os.getcwd(), 'deepspeech_model', g.user, g.language, 'ds.scorer'))
+        except Exception as e:
+            return make_response(jsonify({'status':'no such model'}), 500)
+    _ds = ds[model_name]
     _, tmp_fname1 = mkstemp(prefix='ds_transcriber.', suffix='.wav')
     _, tmp_fname2 = mkstemp(prefix='ds_transcriber.', suffix='.wav')
     ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-b:a', '16', '-ar', '16000', '-y', tmp_fname1]
@@ -75,8 +82,8 @@ def post():
     os.remove(tmp_fname1)
     os.remove(tmp_fname2)
     if details:
-        return make_response(jsonify(metadata_json_output(ds.sttWithMetadata(audio, candidates))), 200)
-    data = metadata_json_output(ds.sttWithMetadata(audio, candidates))
+        return make_response(jsonify(metadata_json_output(_ds.sttWithMetadata(audio, candidates))), 200)
+    data = metadata_json_output(_ds.sttWithMetadata(audio, candidates))
     transcripts={'transcripts':[]}
     results=[]
     for transcript in data['transcripts']:

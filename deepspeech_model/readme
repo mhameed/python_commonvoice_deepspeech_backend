@@ -1,8 +1,22 @@
-This directory should contain two downloaded files from the mozilla deepspeech project, namely the pbmm file 
-and the scorer file.
-rename the files so that they are ds.pbmm, and ds.scorer, that way our code can find them without too much 
-faf.
+This directory should contain a directory for each user. Each user 
+subdirectory should contain a directory for the language code of the 
+model thats contained within it.
 
+For example:
+
+    Bob
+    -> En
+       -> ds.pbmm
+       -> ds.scorer
+    -> zh-CN
+       -> ds.pbmm
+       -> ds.scorer
+    Fredrik
+    -> Fr
+       -> ds.pbmm
+       -> ds.scorer
+
+These are either the Mozilla pre-built models from:
 https://github.com/mozilla/DeepSpeech
 
-At moment of writing, the pbmm and scorer files are the v0.9.3 files.
+or models exported from training.
