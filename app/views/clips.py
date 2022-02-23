@@ -46,9 +46,9 @@ def post():
         logger.debug(f"post: could not find a sentence with text:{sentence} or id:{sentence_id}")
         return make_response(jsonify(status='No such sentence', sentence_id=sentence_id, sentence=sentence), 404)
     c = Clip(sentence_id=s.id, language=g.language, user=g.user)
-    _, tmp_fname1 = mkstemp(prefix='ds_clip.', suffix='.wav')
-    _, tmp_fname2 = mkstemp(prefix='ds_clip.', suffix='.wav')
-    _, tmp_fname3 = mkstemp(prefix='ds_clip.', suffix='.ogg')
+    _, tmp_fname1 = mkstemp(prefix='ds_clip_', suffix='.wav')
+    _, tmp_fname2 = mkstemp(prefix='ds_clip_', suffix='.wav')
+    _, tmp_fname3 = mkstemp(prefix='ds_clip_', suffix='.ogg')
     ffmpeg_in = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-y', tmp_fname1]
     sox_mid = sox[tmp_fname1, tmp_fname2, 'norm', '-0.1']
     ffmpeg_out = ffmpeg['-i', tmp_fname2, '-y', tmp_fname3]

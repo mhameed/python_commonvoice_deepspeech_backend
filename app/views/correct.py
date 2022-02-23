@@ -28,9 +28,9 @@ def post():
             s = Sentence(text=sentence, language=g.language, user=g.user, source=source)
             s.save()
         c = Clip(sentence_id=s.id, language=g.language, user=g.user)
-        _, tmp_fname1 = mkstemp(prefix='ds_correct.', suffix='.wav')
-        _, tmp_fname2 = mkstemp(prefix='ds_correct.', suffix='.wav')
-        _, tmp_fname3 = mkstemp(prefix='ds_correct.', suffix='.ogg')
+        _, tmp_fname1 = mkstemp(prefix='ds_correct_', suffix='.wav')
+        _, tmp_fname2 = mkstemp(prefix='ds_correct_', suffix='.wav')
+        _, tmp_fname3 = mkstemp(prefix='ds_correct_', suffix='.ogg')
         ffmpeg_in = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-y', tmp_fname1]
         sox_mid = sox[tmp_fname1, tmp_fname2, 'norm', '-0.1']
         ffmpeg_out = ffmpeg['-i', tmp_fname2, '-y', tmp_fname3]

@@ -68,8 +68,8 @@ def post():
         except Exception as e:
             return make_response(jsonify({'status':'no such model'}), 500)
     _ds = ds[model_name]
-    _, tmp_fname1 = mkstemp(prefix='ds_transcriber.', suffix='.wav')
-    _, tmp_fname2 = mkstemp(prefix='ds_transcriber.', suffix='.wav')
+    _, tmp_fname1 = mkstemp(prefix='ds_transcribe_', suffix='.wav')
+    _, tmp_fname2 = mkstemp(prefix='ds_transcribe_', suffix='.wav')
     ffmpeg_cmd = ffmpeg['-i', '-', '-ac', '1', '-b:a', '16', '-ar', '16000', '-y', tmp_fname1]
     sox_cmd = sox[tmp_fname1, tmp_fname2, 'norm', '-0.1']
     # convert whatever we get into 16 bit 16khz mono wav:

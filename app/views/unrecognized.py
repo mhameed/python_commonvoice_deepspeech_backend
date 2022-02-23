@@ -16,9 +16,9 @@ def post():
     if not request.content_type.lower().startswith('audio/'):
         return make_response(jsonify(status='Expected "content-type: audio/*" header'), 400)
     u = Unrecognized(user=g.user, language=g.language)
-    _, tmp_fname1 = mkstemp(prefix='ds_unrecognized.', suffix='.wav')
-    _, tmp_fname2 = mkstemp(prefix='ds_unrecognized.', suffix='.wav')
-    _, tmp_fname3 = mkstemp(prefix='ds_unrecognized.', suffix='.ogg')
+    _, tmp_fname1 = mkstemp(prefix='ds_unrecognized_', suffix='.wav')
+    _, tmp_fname2 = mkstemp(prefix='ds_unrecognized_', suffix='.wav')
+    _, tmp_fname3 = mkstemp(prefix='ds_unrecognized_', suffix='.ogg')
     ffmpeg_in = ffmpeg['-i', '-', '-ac', '1', '-ar', '44100', '-y', tmp_fname1]
     sox_mid = sox[tmp_fname1, tmp_fname2, 'norm', '-0.1']
     ffmpeg_out = ffmpeg['-i', tmp_fname2, '-y', tmp_fname3]
