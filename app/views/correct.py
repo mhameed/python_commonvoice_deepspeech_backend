@@ -48,9 +48,9 @@ def post():
         return jsonify(filePrefix=c.id)
     elif request.content_type.lower().startswith('application/json'):
         content = request.json
-        if 'text' not in content or 'unrecognized_id' not in content or len(content.keys()) != 2:
-            return make_response(jsonify(status='Expected "unrecognized_id" and "text"'), 400)
-        u_id = content['unrecognized_id']
+        if 'text' not in content or 'id' not in content or len(content.keys()) != 2:
+            return make_response(jsonify(status='Expected "id" and "text"'), 400)
+        u_id = content['id']
         u = Unrecognized.query.filter(_sa.and_(Unrecognized.language==g.language, Unrecognized.user==g.user, Unrecognized.id==u_id)).first()
         if not u:
             return make_response(jsonify(status='No such unrecognized clip'), 404)
