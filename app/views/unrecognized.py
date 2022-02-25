@@ -41,7 +41,7 @@ def get():
         return make_response(jsonify([]), 404)
     d = {}
     d['id'] = u.id
-    d['audioSrc'] = 'https://cv.hameed.info' + url_for('resources.get', id=u.id, language=g.language, user=g.user)
+    d['audioSrc'] = request.url_root + url_for('resources.get', id=u.id, language=g.language, user=g.user)
     return jsonify(d)
 
 # vim: sw=4 ts=4 sts=4 expandtab

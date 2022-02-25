@@ -81,7 +81,7 @@ def get():
         for c in  Clip.query.filter(_sa.and_(Clip.user==g.user, Clip.language==g.language, Clip.positiveVotes+Clip.negativeVotes == voteTotal)).order_by(func.random()).limit(count):
             d = {}
             d['id'] = c.id
-            d['audioSrc'] = 'https://cv.hameed.info' + url_for('resources.get', id=c.id, language=g.language, user=g.user)
+            d['audioSrc'] = request.url_root + url_for('resources.get', id=c.id, language=g.language, user=g.user)
             d['glob'] = c.id+'/'+c.sentence.id
             d['sentence'] = {'id':c.sentence.id, 'text':c.sentence.text}
             resp.append(d)
